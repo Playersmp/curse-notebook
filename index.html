@@ -3,761 +3,668 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chapter 1: The Forbidden Notebook | Horror Game</title>
+    <title>Chapter 1: The Death Notebook - 3D Horror Game</title>
     <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-        }
-
         body {
             margin: 0;
-            min-height: 100vh;
-            background: radial-gradient(circle at 20% 30%, #0a0507, #000000);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Courier New', 'Creepster', 'Monaco', monospace;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
+            font-family: 'Courier New', 'Creepster', monospace;
+            color: #eedd99;
         }
-
-        /* Main game container */
-        .game-container {
-            max-width: 1300px;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(2px);
-            border-radius: 48px;
-            border: 1px solid #8b0000;
-            box-shadow: 0 0 40px rgba(139, 0, 0, 0.3), inset 0 0 20px rgba(0,0,0,0.8);
-            padding: 20px;
-            transition: all 0.2s;
-        }
-
-        /* Two columns: monster left + notebook right */
-        .duel-layout {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-            justify-content: center;
-        }
-
-        /* LEFT SIDE: MONSTER DOMAIN */
-        .monster-side {
-            flex: 1.2;
-            min-width: 240px;
-            background: #110000aa;
-            border-radius: 40px;
-            padding: 20px 15px;
-            text-align: center;
-            border-right: 3px solid #a52a2a;
-            box-shadow: 0 0 20px #ff000022;
-            backdrop-filter: blur(4px);
-        }
-
-        .monster-title {
-            font-size: 1.3rem;
-            color: #ff5e5e;
-            text-shadow: 0 0 5px red;
-            letter-spacing: 4px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .monster-canvas-container {
-            background: #1a0b0b;
-            border-radius: 50%;
-            padding: 12px;
-            box-shadow: 0 0 25px #b30000;
-            margin-bottom: 20px;
-            display: inline-block;
-        }
-
-        canvas#monsterCanvas {
-            width: 200px;
-            height: 200px;
-            display: block;
-            border-radius: 50%;
-            background: #2c1414;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        canvas#monsterCanvas:hover {
-            transform: scale(1.02);
-        }
-
-        .monster-whisper {
-            background: #2f0e0e;
-            padding: 12px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            color: #ffb7b7;
-            font-style: italic;
-            border-left: 5px solid red;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        /* RIGHT SIDE: NOTEBOOK */
-        .notebook-side {
-            flex: 2;
-            min-width: 300px;
-            background: #1f1a12e0;
-            background-image: repeating-linear-gradient(45deg, #2c241a 0px, #2c241a 2px, #3d3122 2px, #3d3122 8px);
-            border-radius: 28px;
-            padding: 20px;
-            border: 2px solid #ac8e68;
-            box-shadow: 10px 10px 20px black;
-        }
-
-        .notebook-header {
-            font-family: 'Creepster', cursive;
-            font-size: 2rem;
-            color: #e6cf8b;
-            text-align: center;
-            text-shadow: 3px 3px 0 #5a1e1e;
-            border-bottom: 2px dashed #9e6b3e;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-        }
-
-        .victim-list {
-            background: #0f0b07;
-            padding: 12px;
-            border-radius: 20px;
-            max-height: 180px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            font-family: monospace;
-            border: 1px solid #7a4c2c;
-        }
-
-        .victim-list h3 {
-            margin: 0 0 8px 0;
-            color: #dba959;
-            font-size: 1.2rem;
-            text-align: center;
-        }
-
-        #victimNames {
-            list-style: none;
-            padding-left: 12px;
-            margin: 0;
-            color: #ecb176;
-            font-size: 1rem;
-        }
-
-        #victimNames li {
-            padding: 5px;
-            border-bottom: 1px solid #4e2a1a;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .write-area {
-            background: #2a241a;
-            padding: 15px;
-            border-radius: 25px;
-            margin-top: 15px;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        #nameInput {
-            flex: 3;
-            background: #000000aa;
-            border: 2px solid #b5651e;
-            padding: 12px 15px;
-            font-size: 1.1rem;
+        /* Game UI overlay */
+        #ui {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 280px;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            border-left: 4px solid #aa2e2e;
+            padding: 12px 16px;
+            z-index: 10;
+            pointer-events: auto;
             font-family: 'Courier New', monospace;
-            color: #f2c94c;
-            border-radius: 60px;
-            outline: none;
-            font-weight: bold;
+            box-shadow: 0 0 20px rgba(0,0,0,0.6);
         }
-
-        #writeBtn {
+        #victim-list {
+            max-height: 150px;
+            overflow-y: auto;
+            margin: 10px 0;
+            font-size: 14px;
+            list-style: none;
+            padding-left: 0;
+        }
+        #victim-list li {
+            border-bottom: 1px solid #5a2e2e;
+            padding: 4px;
+            color: #ffb7b7;
+        }
+        .input-area {
+            display: flex;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        #nameInput {
             flex: 1;
+            background: #1e1a14;
+            border: 1px solid #b5651e;
+            padding: 8px;
+            color: #f2c94c;
+            font-family: monospace;
+            border-radius: 20px;
+            outline: none;
+        }
+        button {
             background: #5e2a2a;
             border: none;
             color: white;
             font-weight: bold;
-            font-size: 1.2rem;
-            padding: 0 20px;
-            border-radius: 60px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            transition: 0.2s;
-            box-shadow: 0 4px 0 #2f0f0f;
-        }
-
-        #writeBtn:hover {
-            background: #8b3c3c;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 #2f0f0f;
-        }
-
-        #writeBtn:active {
-            transform: translateY(2px);
-        }
-
-        .kill-counter {
-            text-align: center;
-            font-size: 1rem;
-            background: black;
-            display: inline-block;
-            padding: 5px 15px;
+            padding: 8px 16px;
             border-radius: 30px;
-            color: crimson;
-            font-weight: bold;
-        }
-
-        .restart-btn {
-            background: #2c1a1a;
-            border: 1px solid #af4c4c;
-            padding: 8px 18px;
-            border-radius: 40px;
-            color: #ffaaaa;
-            font-weight: bold;
             cursor: pointer;
-            margin-top: 20px;
-            font-family: monospace;
             transition: 0.2s;
+            font-family: monospace;
         }
-
-        .restart-btn:hover {
-            background: #571f1f;
-            color: white;
+        button:hover {
+            background: #8b3c3c;
+            transform: scale(1.02);
         }
-
-        /* CUTSCENE OVERLAY */
-        .cutscene-overlay {
+        .counter {
+            font-size: 18px;
+            text-align: center;
+            margin: 8px 0;
+            color: #ff5e5e;
+            text-shadow: 0 0 4px darkred;
+        }
+        .restart {
+            width: 100%;
+            background: #2c1a1a;
+            margin-top: 8px;
+        }
+        /* Cutscene Overlay */
+        .cutscene {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(12px);
+            z-index: 100;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             visibility: hidden;
             opacity: 0;
-            transition: visibility 0s, opacity 0.3s linear;
-            font-family: 'Courier New', monospace;
+            transition: visibility 0s, opacity 0.3s;
+            pointer-events: auto;
         }
-
         .cutscene-card {
-            background: #0c0303;
+            background: #0a0202;
+            border: 3px solid #a12222;
+            border-radius: 40px;
             max-width: 550px;
             width: 80%;
-            border: 3px solid #aa2e2e;
-            border-radius: 48px;
-            padding: 30px 20px;
+            padding: 30px;
             text-align: center;
-            color: #ffc9c9;
-            box-shadow: 0 0 70px red;
-            transform: scale(0.95);
-            transition: transform 0.2s;
+            box-shadow: 0 0 50px rgba(255,0,0,0.3);
+            animation: flicker 2s infinite;
         }
-
         .cutscene-card h2 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin-top: 0;
             color: #d64545;
-            text-shadow: 0 0 5px black;
         }
-
         .cutscene-text {
             font-size: 1.3rem;
-            line-height: 1.4;
             margin: 20px 0;
-            font-weight: bold;
+            line-height: 1.4;
         }
-
-        .cutscene-skip {
-            background: #611c1c;
-            border: none;
-            padding: 8px 20px;
-            color: white;
-            border-radius: 30px;
-            cursor: pointer;
-            font-family: monospace;
+        @keyframes flicker {
+            0% { border-color: #a12222; box-shadow: 0 0 20px red; }
+            50% { border-color: #ff4d4d; box-shadow: 0 0 40px #ff0000; }
+            100% { border-color: #a12222; box-shadow: 0 0 20px red; }
         }
-
-        /* misc */
-        button:disabled {
-            opacity: 0.5;
-            transform: none;
-            cursor: not-allowed;
+        .instruction {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.5);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 10;
         }
-
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
+        @keyframes pulse {
+            0% { text-shadow: 0 0 0 red; }
+            100% { text-shadow: 0 0 8px red; }
         }
-
-        .warning {
-            font-size: 0.8rem;
-            color: #b66f6f;
+        .monster-warning {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            background: #2a0a0a;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            border-left: 3px solid red;
+            pointer-events: none;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
-
-<div class="game-container">
-    <div class="duel-layout">
-        <!-- LEFT: MONSTER ZONE -->
-        <div class="monster-side">
-            <div class="monster-title">☠ SHADOW STALKER ☠</div>
-            <div class="monster-canvas-container">
-                <canvas id="monsterCanvas" width="200" height="200"></canvas>
-            </div>
-            <div class="monster-whisper" id="monsterWhisper">
-                "Write a name... feel the curse..."
-            </div>
+    <div id="ui">
+        <div style="text-align:center; font-size:1.2rem;">📓 BLOOD NOTEBOOK 📓</div>
+        <ul id="victim-list"><li>— no names yet —</li></ul>
+        <div class="input-area">
+            <input type="text" id="nameInput" placeholder="Write a name...">
+            <button id="writeBtn">✍️ KILL</button>
         </div>
+        <div class="counter">💀 SOULS TAKEN: <span id="killCount">0</span> / 3 💀</div>
+        <button id="restartBtn" class="restart">⟳ RESTART CHAPTER</button>
+    </div>
+    <div class="instruction">🔮 The monster stands on your LEFT. Write names to feed the curse.</div>
+    <div class="monster-warning" id="monsterWhisper">👁️ "Write a name..." 👁️</div>
 
-        <!-- RIGHT: NOTEBOOK -->
-        <div class="notebook-side">
-            <div class="notebook-header">📓 THE BLOOD NOTEBOOK 📓</div>
-            <div class="victim-list">
-                <h3>✍️ NAMES CLAIMED ✍️</h3>
-                <ul id="victimNames">
-                    <li style="color:#755a3a;">— none yet —</li>
-                </ul>
-            </div>
-            <div class="write-area">
-                <div class="input-group">
-                    <input type="text" id="nameInput" placeholder="Type a person's name..." autocomplete="off">
-                    <button id="writeBtn">✍️ WRITE NAME</button>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span class="kill-counter">💀 SOULS TAKEN: <span id="killCountDisplay">0</span> / 3 💀</span>
-                    <span class="warning">⚠️ each name = death ⚠️</span>
-                </div>
-            </div>
-            <div class="footer">
-                <button id="restartChapterBtn" class="restart-btn">⟳ RESTART CHAPTER</button>
-                <span style="font-size:12px;">Chapter I — The Whispering Pages</span>
-            </div>
+    <!-- Cutscene overlay -->
+    <div id="cutsceneOverlay" class="cutscene">
+        <div class="cutscene-card">
+            <h2>⚰️ GRIM OMEN ⚰️</h2>
+            <div id="cutsceneMsg" class="cutscene-text">...</div>
+            <button id="closeCutscene">▶ CONTINUE</button>
         </div>
     </div>
-</div>
 
-<!-- CUTSCENE MODAL OVERLAY -->
-<div id="cutsceneOverlay" class="cutscene-overlay">
-    <div class="cutscene-card">
-        <h2>⚰️ GRIM CUTSCENE ⚰️</h2>
-        <div id="cutsceneMessage" class="cutscene-text">...</div>
-        <button id="closeCutsceneBtn" class="cutscene-skip">▶ CONTINUE</button>
-    </div>
-</div>
-
-<script>
-    // ---------- GAME STATE ----------
-    let killCount = 0;
-    const MAX_KILLS = 3;          // Chapter 1 ends after 3 deaths
-    let victims = [];              // store names killed
-    let gameActive = false;        // becomes true after intro cutscene
-    let processingAction = false;  // lock while cutscene/voice active
-    let currentUtterance = null;   // for speech cancellation
-
-    // DOM elements
-    const victimListEl = document.getElementById('victimNames');
-    const killCountSpan = document.getElementById('killCountDisplay');
-    const nameInput = document.getElementById('nameInput');
-    const writeBtn = document.getElementById('writeBtn');
-    const restartBtn = document.getElementById('restartChapterBtn');
-    const monsterWhisper = document.getElementById('monsterWhisper');
-    const cutsceneOverlay = document.getElementById('cutsceneOverlay');
-    const cutsceneMessageDiv = document.getElementById('cutsceneMessage');
-    const closeCutsceneBtn = document.getElementById('closeCutsceneBtn');
-
-    // Monster canvas context
-    const canvas = document.getElementById('monsterCanvas');
-    const ctx = canvas.getContext('2d');
-
-    // ----- Scary Voice Helper -----
-    function speakScary(text, onEnd = null) {
-        if (!window.speechSynthesis) {
-            console.warn("Speech not supported");
-            if (onEnd) onEnd();
-            return;
+    <!-- Import Three.js core and add-ons -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
         }
-        // cancel any ongoing scary voice to avoid overlap
-        if (currentUtterance) {
-            window.speechSynthesis.cancel();
-        }
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.75;      // slow, ominous
-        utterance.pitch = 0.45;     // deep, demonic
-        utterance.volume = 0.9;
-        // optional: try to pick deep voice if available
-        if (window.speechSynthesis.getVoices) {
-            const voices = window.speechSynthesis.getVoices();
-            const deepVoice = voices.find(v => v.name.toLowerCase().includes('deep') || v.name.toLowerCase().includes('male') && v.lang === 'en-US');
-            if (deepVoice) utterance.voice = deepVoice;
-        }
-        utterance.onend = () => {
-            currentUtterance = null;
-            if (onEnd) onEnd();
-        };
-        utterance.onerror = () => {
-            currentUtterance = null;
-            if (onEnd) onEnd();
-        };
-        currentUtterance = utterance;
-        window.speechSynthesis.speak(utterance);
-    }
+    </script>
 
-    // show cutscene modal with scary voice
-    function showCutscene(title, message, scaryVoiceText, callbackAfterClose) {
-        if (processingAction) return;
-        processingAction = true;
-        // update modal content
-        cutsceneMessageDiv.innerHTML = `<span style="color:#ff8a8a;">✝️ ${message} ✝️</span>`;
-        cutsceneOverlay.style.visibility = "visible";
-        cutsceneOverlay.style.opacity = "1";
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // --- setup scene, camera, renderers ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x020005);
+        scene.fog = new THREE.FogExp2(0x020005, 0.035);
         
-        // play scary voice
-        speakScary(scaryVoiceText || message, () => {
-            // voice finished, but we still keep overlay until user clicks Continue
-        });
+        // Camera: positioned to see notebook and monster on left
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(2.2, 1.6, 3.5);
+        camera.lookAt(0, 0.5, 0);
         
-        // one-time click handler for continue
-        const continueHandler = () => {
-            cutsceneOverlay.style.visibility = "hidden";
-            cutsceneOverlay.style.opacity = "0";
-            closeCutsceneBtn.removeEventListener('click', continueHandler);
-            if (callbackAfterClose) callbackAfterClose();
-            processingAction = false;
-        };
-        closeCutsceneBtn.addEventListener('click', continueHandler, { once: true });
-    }
-
-    // hide cutscene manually if needed (safeguard)
-    function forceHideCutscene() {
-        cutsceneOverlay.style.visibility = "hidden";
-        cutsceneOverlay.style.opacity = "0";
-        processingAction = false;
-    }
-
-    // update notebook victim list UI
-    function updateVictimList() {
-        victimListEl.innerHTML = '';
-        if (victims.length === 0) {
-            victimListEl.innerHTML = '<li style="color:#755a3a;">— none yet —</li>';
-            return;
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+        
+        // CSS2DRenderer for floating text
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+        
+        // --- lighting ---
+        // ambient
+        const ambient = new THREE.AmbientLight(0x221111);
+        scene.add(ambient);
+        // main directional light (spooky)
+        const mainLight = new THREE.DirectionalLight(0xffaa77, 1.2);
+        mainLight.position.set(2, 3, 1.5);
+        mainLight.castShadow = true;
+        mainLight.receiveShadow = true;
+        mainLight.shadow.mapSize.width = 1024;
+        mainLight.shadow.mapSize.height = 1024;
+        scene.add(mainLight);
+        // back red fill
+        const backLight = new THREE.PointLight(0x550000, 0.6);
+        backLight.position.set(-1, 1.2, -2);
+        scene.add(backLight);
+        // flickering candle (point light)
+        const flickerLight = new THREE.PointLight(0xaa5533, 0.8, 6);
+        flickerLight.position.set(0.5, 0.8, 1.2);
+        scene.add(flickerLight);
+        
+        // ground plane with cobblestone-like texture
+        const canvasTex = document.createElement('canvas');
+        canvasTex.width = 512;
+        canvasTex.height = 512;
+        const ctxTex = canvasTex.getContext('2d');
+        ctxTex.fillStyle = '#2a2418';
+        ctxTex.fillRect(0, 0, 512, 512);
+        ctxTex.strokeStyle = '#4a3a28';
+        for(let i=0;i<400;i++) {
+            ctxTex.beginPath();
+            ctxTex.arc(Math.random()*512, Math.random()*512, Math.random()*3+1, 0, Math.PI*2);
+            ctxTex.fillStyle = `#3a2c1c`;
+            ctxTex.fill();
         }
-        victims.forEach(name => {
-            const li = document.createElement('li');
-            li.textContent = `🕯️ ${name} (perished)`;
-            victimListEl.appendChild(li);
-        });
-    }
-
-    // update kill counter UI
-    function updateKillCounter() {
-        killCountSpan.textContent = `${killCount} / ${MAX_KILLS}`;
-        if (killCount >= MAX_KILLS) {
-            killCountSpan.style.color = "#ff5555";
-            killCountSpan.style.textShadow = "0 0 4px red";
-        } else {
-            killCountSpan.style.color = "crimson";
+        const groundTexture = new THREE.CanvasTexture(canvasTex);
+        groundTexture.wrapS = THREE.RepeatWrapping;
+        groundTexture.wrapT = THREE.RepeatWrapping;
+        groundTexture.repeat.set(8, 8);
+        
+        const ground = new THREE.Mesh(
+            new THREE.PlaneGeometry(12, 12),
+            new THREE.MeshStandardMaterial({ map: groundTexture, roughness: 0.8, metalness: 0.1 })
+        );
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.5;
+        ground.receiveShadow = true;
+        scene.add(ground);
+        
+        // creepy walls (back and sides)
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0x1a1210, roughness: 0.9 });
+        const backWall = new THREE.Mesh(new THREE.BoxGeometry(10, 3, 0.3), wallMat);
+        backWall.position.set(0, 1.2, -3.2);
+        backWall.receiveShadow = true;
+        scene.add(backWall);
+        
+        // left wall hint (monster side)
+        const leftPillar = new THREE.Mesh(new THREE.BoxGeometry(0.6, 2.2, 0.6), new THREE.MeshStandardMaterial({ color: 0x2f1e1a, roughness: 0.5 }));
+        leftPillar.position.set(-2.8, 0.2, -1.2);
+        leftPillar.castShadow = true;
+        scene.add(leftPillar);
+        
+        // --- NOTEBOOK (3D with texture) ---
+        const notebookGroup = new THREE.Group();
+        // cover
+        const coverMat = new THREE.MeshStandardMaterial({ color: 0x4a2a1a, roughness: 0.3, emissive: 0x1a0a00 });
+        const cover = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.12, 0.7), coverMat);
+        cover.position.y = 0;
+        cover.castShadow = true;
+        notebookGroup.add(cover);
+        // pages texture
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = 512;
+        pageCanvas.height = 512;
+        const pageCtx = pageCanvas.getContext('2d');
+        pageCtx.fillStyle = '#f9efcf';
+        pageCtx.fillRect(0, 0, 512, 512);
+        pageCtx.fillStyle = '#7a5a3a';
+        pageCtx.font = 'bold 28px "Courier New"';
+        pageCtx.fillText("DEATH", 200, 260);
+        pageCtx.fillStyle = '#3d2a1a';
+        for(let i=0;i<40;i++) pageCtx.fillRect(50+Math.random()*400, 300+Math.random()*180, 3, Math.random()*12);
+        const pageTexture = new THREE.CanvasTexture(pageCanvas);
+        const pages = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.08, 0.65), new THREE.MeshStandardMaterial({ map: pageTexture, color: 0xefdba1 }));
+        pages.position.y = 0.08;
+        pages.castShadow = true;
+        notebookGroup.add(pages);
+        // glowing rune on cover
+        const runeMat = new THREE.MeshStandardMaterial({ color: 0xaa2222, emissive: 0x441111 });
+        const rune = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), runeMat);
+        rune.position.set(0.3, 0.06, 0.25);
+        notebookGroup.add(rune);
+        
+        notebookGroup.position.set(0.4, -0.2, 0.8);
+        notebookGroup.rotation.y = -0.3;
+        notebookGroup.castShadow = true;
+        scene.add(notebookGroup);
+        
+        // floating particles around notebook
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCount = 180;
+        const particlePositions = new Float32Array(particleCount * 3);
+        for(let i=0;i<particleCount;i++) {
+            particlePositions[i*3] = (Math.random() - 0.5) * 2.5;
+            particlePositions[i*3+1] = Math.random() * 1.5;
+            particlePositions[i*3+2] = (Math.random() - 0.5) * 2;
         }
-    }
-
-    // monster reaction & redraw (glow effect on kill)
-    let monsterGlow = 0;
-    function animateMonster(glowIntensity = 0) {
-        // draw scary creature - always present on left side
-        ctx.clearRect(0, 0, 200, 200);
-        // background abyss
-        ctx.fillStyle = "#1a0505";
-        ctx.fillRect(0, 0, 200, 200);
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        const particleMat = new THREE.PointsMaterial({ color: 0xff5533, size: 0.02, transparent: true, opacity: 0.5 });
+        const particles = new THREE.Points(particleGeo, particleMat);
+        particles.position.set(0.4, 0.1, 0.9);
+        scene.add(particles);
+        
+        // --- MONSTER (textured, animated, on left side) ---
+        const monsterGroup = new THREE.Group();
+        // body
+        const bodyTexCanvas = document.createElement('canvas');
+        bodyTexCanvas.width = 512;
+        bodyTexCanvas.height = 512;
+        const bodyCtx = bodyTexCanvas.getContext('2d');
+        bodyCtx.fillStyle = '#3a1a1a';
+        bodyCtx.fillRect(0, 0, 512, 512);
+        bodyCtx.fillStyle = '#6a2a2a';
+        for(let i=0;i<300;i++) bodyCtx.fillRect(Math.random()*512, Math.random()*512, 4, 4);
+        bodyCtx.fillStyle = '#aa4444';
+        bodyCtx.beginPath();
+        bodyCtx.arc(256, 256, 70, 0, Math.PI*2);
+        bodyCtx.fill();
+        const bodyTexture = new THREE.CanvasTexture(bodyTexCanvas);
+        const bodyMat = new THREE.MeshStandardMaterial({ map: bodyTexture, roughness: 0.7, emissive: 0x2a0a0a });
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.7, 1.1, 12), bodyMat);
+        body.castShadow = true;
+        body.position.y = 0.4;
+        monsterGroup.add(body);
+        
+        // head with multiple eyes texture
+        const headTexCanvas = document.createElement('canvas');
+        headTexCanvas.width = 512;
+        headTexCanvas.height = 512;
+        const headCtx = headTexCanvas.getContext('2d');
+        headCtx.fillStyle = '#2f1111';
+        headCtx.fillRect(0, 0, 512, 512);
+        headCtx.fillStyle = '#ffaa66';
+        headCtx.font = 'bold 60px monospace';
+        headCtx.fillText("⚠", 220, 280);
+        headCtx.fillStyle = '#ff0000';
+        for(let i=0;i<5;i++) headCtx.fillRect(180+i*40, 320, 20, 30);
+        const headTexture = new THREE.CanvasTexture(headTexCanvas);
+        const headMat = new THREE.MeshStandardMaterial({ map: headTexture, emissive: 0x330000 });
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.55, 24, 24), headMat);
+        head.position.y = 0.98;
+        head.castShadow = true;
+        monsterGroup.add(head);
+        
         // horns
-        ctx.fillStyle = "#3a1a1a";
-        ctx.beginPath();
-        ctx.moveTo(60, 45);
-        ctx.lineTo(85, 15);
-        ctx.lineTo(100, 40);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(140, 45);
-        ctx.lineTo(115, 15);
-        ctx.lineTo(100, 40);
-        ctx.fill();
-        // main head
-        ctx.fillStyle = "#2c0f0f";
-        ctx.beginPath();
-        ctx.ellipse(100, 95, 55, 65, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#3d1a1a";
-        ctx.beginPath();
-        ctx.ellipse(100, 105, 45, 50, 0, 0, Math.PI * 2);
-        ctx.fill();
-        // eyes (glowing)
-        if (glowIntensity > 0) {
-            ctx.fillStyle = `rgba(255, 50, 50, ${Math.min(1, glowIntensity)})`;
-        } else {
-            ctx.fillStyle = "#ff3a3a";
-        }
-        ctx.beginPath();
-        ctx.arc(75, 85, 12, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(125, 85, 12, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#000000";
-        ctx.beginPath();
-        ctx.arc(72, 82, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(122, 82, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(69, 78, 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(119, 78, 2, 0, Math.PI * 2);
-        ctx.fill();
-        // mouth sharp teeth
-        ctx.fillStyle = "#4e1010";
-        ctx.beginPath();
-        ctx.ellipse(100, 125, 28, 18, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#f0dbb2";
-        for (let i = 0; i < 6; i++) {
-            ctx.fillRect(80 + i * 8, 118, 4, 12);
-        }
-        // additional claw marks
-        ctx.strokeStyle = "#8b3a3a";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(45, 140);
-        ctx.lineTo(30, 160);
-        ctx.moveTo(155, 140);
-        ctx.lineTo(170, 160);
-        ctx.stroke();
-    }
-
-    function triggerMonsterReaction() {
-        monsterWhisper.innerHTML = "👁️ \"Death feeds me... Write another...\" 👁️";
-        let intensity = 1;
-        const interval = setInterval(() => {
-            animateMonster(intensity);
-            intensity -= 0.2;
-            if (intensity <= 0) {
-                clearInterval(interval);
-                animateMonster(0);
-                setTimeout(() => {
-                    monsterWhisper.innerHTML = "✍️ The notebook hungers... write a name... ✍️";
-                }, 800);
+        const hornMat = new THREE.MeshStandardMaterial({ color: 0x442222 });
+        const hornL = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.55, 6), hornMat);
+        hornL.position.set(-0.4, 1.25, 0.2);
+        hornL.castShadow = true;
+        const hornR = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.55, 6), hornMat);
+        hornR.position.set(0.4, 1.25, 0.2);
+        hornR.castShadow = true;
+        monsterGroup.add(hornL);
+        monsterGroup.add(hornR);
+        
+        // claw arms
+        const armMat = new THREE.MeshStandardMaterial({ color: 0x5a2a2a });
+        const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.12, 0.8, 6), armMat);
+        leftArm.position.set(-0.75, 0.7, 0);
+        leftArm.castShadow = true;
+        const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.12, 0.8, 6), armMat);
+        rightArm.position.set(0.75, 0.7, 0);
+        rightArm.castShadow = true;
+        monsterGroup.add(leftArm);
+        monsterGroup.add(rightArm);
+        
+        monsterGroup.position.set(-2.1, -0.2, 0.2);
+        monsterGroup.rotation.y = 0.35;
+        scene.add(monsterGroup);
+        
+        // Idle animation variables
+        let time = 0;
+        let monsterPulse = 0;
+        
+        // death particle system
+        let deathParticles = null;
+        function createDeathBurst(pos) {
+            if(deathParticles) scene.remove(deathParticles);
+            const particleCountBurst = 200;
+            const burstGeo = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCountBurst * 3);
+            for(let i=0;i<particleCountBurst;i++) {
+                positions[i*3] = (Math.random() - 0.5) * 1.2;
+                positions[i*3+1] = Math.random() * 1.2;
+                positions[i*3+2] = (Math.random() - 0.5) * 1.2;
             }
-        }, 80);
-    }
-
-    // DEATH CUTSCENE: when name is written
-    function killPersonByName(personName) {
-        if (!gameActive) {
-            showCutscene("LOCKED", "The notebook hasn't awakened yet... Start the chapter first.", "The ritual hasn't begun...", () => {});
-            return false;
+            burstGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const burstMat = new THREE.PointsMaterial({ color: 0xff3300, size: 0.05, transparent: true, blending: THREE.AdditiveBlending });
+            deathParticles = new THREE.Points(burstGeo, burstMat);
+            deathParticles.position.copy(pos);
+            scene.add(deathParticles);
+            setTimeout(() => { if(deathParticles) scene.remove(deathParticles); deathParticles=null; }, 800);
         }
-        if (killCount >= MAX_KILLS) {
-            showCutscene("CHAPTER END", "The chapter is sealed. Three souls already claimed. Restart to continue.", "No more pages... The darkness rests...", () => {});
-            return false;
+        
+        // --- Game state ---
+        let killCount = 0;
+        const MAX_KILLS = 3;
+        let victims = [];
+        let gameActive = false;
+        let processing = false;
+        let currentSpeech = null;
+        
+        // UI elements
+        const victimListUI = document.getElementById('victim-list');
+        const killCountSpan = document.getElementById('killCount');
+        const nameInput = document.getElementById('nameInput');
+        const writeBtn = document.getElementById('writeBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const monsterWhisperDiv = document.getElementById('monsterWhisper');
+        const cutsceneOverlay = document.getElementById('cutsceneOverlay');
+        const cutsceneMsgDiv = document.getElementById('cutsceneMsg');
+        const closeCutsceneBtn = document.getElementById('closeCutscene');
+        
+        function updateUI() {
+            victimListUI.innerHTML = victims.length === 0 ? '<li>— no names yet —</li>' : victims.map(v => `<li>🕯️ ${v} (perished)</li>`).join('');
+            killCountSpan.innerText = `${killCount}/${MAX_KILLS}`;
+            if(killCount >= MAX_KILLS) killCountSpan.style.animation = "pulse 0.8s infinite";
+            else killCountSpan.style.animation = "none";
         }
-        if (processingAction) {
-            monsterWhisper.innerHTML = "⏳ Wait... the curse is still speaking...";
-            return false;
+        
+        function speakScary(text, onEnd) {
+            if(!window.speechSynthesis) { if(onEnd) onEnd(); return; }
+            if(currentSpeech) window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.7;
+            utterance.pitch = 0.4;
+            utterance.volume = 0.9;
+            utterance.onend = () => { currentSpeech = null; if(onEnd) onEnd(); };
+            utterance.onerror = () => { currentSpeech = null; if(onEnd) onEnd(); };
+            currentSpeech = utterance;
+            window.speechSynthesis.speak(utterance);
         }
-        if (!personName || personName.trim() === "") {
-            monsterWhisper.innerHTML = "❓ The monster growls: 'You must write a name!'";
-            return false;
+        
+        function showCutscene(titleMsg, mainMsg, voiceMsg, callback) {
+            if(processing) return;
+            processing = true;
+            cutsceneMsgDiv.innerHTML = `<span style="color:#ff9999;">${mainMsg}</span>`;
+            cutsceneOverlay.style.visibility = "visible";
+            cutsceneOverlay.style.opacity = "1";
+            speakScary(voiceMsg || mainMsg, () => {});
+            const closeHandler = () => {
+                cutsceneOverlay.style.visibility = "hidden";
+                cutsceneOverlay.style.opacity = "0";
+                closeCutsceneBtn.removeEventListener('click', closeHandler);
+                processing = false;
+                if(callback) callback();
+            };
+            closeCutsceneBtn.addEventListener('click', closeHandler, { once: true });
         }
-        const cleanName = personName.trim().substring(0, 20);
-        if (victims.includes(cleanName)) {
-            showCutscene("SAME SOUL", `"${cleanName}" already died... Their ghost lingers.`, `That name already perishes in agony...`, () => {});
-            return false;
+        
+        function monsterReaction() {
+            monsterPulse = 1.2;
+            monsterWhisperDiv.innerHTML = "👹 \"Death feeds the pages...\" 👹";
+            setTimeout(() => { if(killCount<MAX_KILLS) monsterWhisperDiv.innerHTML = "✍️ Write another name... ✍️"; }, 1800);
+            // scale bump
+            monsterGroup.children.forEach(c => { if(c.material) c.material.emissiveIntensity = 0.6; });
+            setTimeout(() => { monsterGroup.children.forEach(c => { if(c.material) c.material.emissiveIntensity = 0; }); }, 400);
         }
-
-        // DEATH SCENARIO DESCRIPTIONS (random scary)
-        const deathScenes = [
-            `${cleanName} screams as shadows tear them apart. Heart stops.`,
-            `${cleanName} vanishes into a dark vortex, bones crack.`,
-            `A ghastly hand drags ${cleanName} beneath the floor. Bloodcurdling cry.`,
-            `${cleanName} feels the curse and collapses, eyes hollow.`,
-            `The monster grins. ${cleanName} is erased from existence, flesh to dust.`
-        ];
-        const randomDeath = deathScenes[Math.floor(Math.random() * deathScenes.length)];
-        const deathText = `✞ ${cleanName} ✞ | ${randomDeath}`;
-        const voiceLine = `${cleanName}... dead. ${randomDeath.replace(cleanName, "this victim")}`;
         
-        // add victim
-        victims.push(cleanName);
-        killCount++;
-        updateVictimList();
-        updateKillCounter();
+        function killPerson(name) {
+            if(!gameActive) { showCutscene("LOCKED", "The notebook hasn't awakened. Restart chapter.", "The curse sleeps...", ()=>{}); return false; }
+            if(killCount >= MAX_KILLS) { showCutscene("CHAPTER END", "Three souls already claimed. Press Restart to relive the nightmare.", "No more blood this chapter.", ()=>{}); return false; }
+            if(processing) { monsterWhisperDiv.innerHTML = "⏳ The ritual is speaking..."; return false; }
+            let cleanName = name.trim().substring(0, 18);
+            if(cleanName === "") { monsterWhisperDiv.innerHTML = "❌ The monster demands a true name!"; return false; }
+            if(victims.includes(cleanName)) { showCutscene("ECHO OF DEATH", `"${cleanName}" already perishes... their soul is bound.`, `That name is already dead.`, ()=>{}); return false; }
+            
+            // add victim
+            victims.push(cleanName);
+            killCount++;
+            updateUI();
+            monsterReaction();
+            
+            const deathScenes = [
+                `${cleanName} gasps as shadows tear the flesh. A final scream.`,
+                `The notebook glows. ${cleanName} crumbles into dust, bones crack.`,
+                `A claw emerges from the left, dragging ${cleanName} into the abyss.`,
+                `${cleanName} writes their own fate. Heart stops. Eyes go dark.`
+            ];
+            const deathMsg = deathScenes[Math.floor(Math.random() * deathScenes.length)];
+            const voiceLine = `${cleanName}... dead. ${deathMsg.replace(cleanName, "the victim")}`;
+            
+            // particle burst at notebook
+            createDeathBurst(notebookGroup.position.clone().add(new THREE.Vector3(0,0.2,0)));
+            
+            showCutscene("⚰️ DEATH NOTE ⚰️", `✞ ${cleanName} ✞\n${deathMsg}`, voiceLine, () => {
+                if(killCount >= MAX_KILLS) {
+                    endChapter();
+                } else {
+                    nameInput.value = "";
+                    nameInput.focus();
+                }
+            });
+            return true;
+        }
         
-        // Monster reaction + visual
-        triggerMonsterReaction();
-        
-        // Show death cutscene with scary voice
-        showCutscene("⚰️ DEATH NOTE ⚰️", deathText, voiceLine, () => {
-            // after cutscene close, check if chapter end
-            if (killCount >= MAX_KILLS) {
-                endChapterOne();
-            } else {
-                // enable game again, no extra lock
-                processingAction = false; // reset flag since showCutscene callback already sets processingAction false (inside after close)
-                // but after cutscene ends, processingAction is set false. ready for next.
-                nameInput.value = "";
-                nameInput.focus();
-            }
-        });
-        
-        // Update monster whisper additionally after cutscene
-        setTimeout(() => {
-            if (killCount < MAX_KILLS) {
-                monsterWhisper.innerHTML = `💀 "${cleanName} is no more... keep writing..." 💀`;
-            }
-        }, 400);
-        
-        return true;
-    }
-
-    // CHAPTER 1 FINALE
-    function endChapterOne() {
-        gameActive = false;   // disable writing
-        writeBtn.disabled = true;
-        nameInput.disabled = true;
-        const finalMessage = "The monster rises from the left, laughing. 'Three names. Three deaths. Chapter One closes... but your soul is now bound to the notebook.' A cold wind extinguishes the lights... TO BE CONTINUED.";
-        showCutscene("📖 CHAPTER I ENDING 📖", finalMessage, "Three souls... the pact is sealed. Chapter one ends... your nightmare begins.", () => {
-            monsterWhisper.innerHTML = "🌀 CHAPTER I FINISHED. RESTART TO RELIVE THE HORROR 🌀";
+        function endChapter() {
+            gameActive = false;
             writeBtn.disabled = true;
             nameInput.disabled = true;
-            processingAction = false;
-        });
-    }
-
-    // INITIAL CUTSCENE: Boy finds notebook + monster appears on left
-    function startInitialCutscene() {
-        if (processingAction) return;
-        gameActive = false;
-        writeBtn.disabled = true;
-        nameInput.disabled = true;
+            const finalMsg = "The monster on your left grins, revealing rows of teeth. 'Three names. The pact is sealed. Chapter One ends... but you belong to the notebook now.' A cold wind extinguishes the lights... TO BE CONTINUED.";
+            showCutscene("📖 CHAPTER I ENDING 📖", finalMsg, "Three souls... the pact is sealed. Your nightmare begins.", () => {
+                monsterWhisperDiv.innerHTML = "🌀 CHAPTER I FINISHED. RESTART TO RELIVE THE HORROR 🌀";
+                processing = false;
+            });
+        }
         
-        const introText = "You, a curious boy, find a black notebook under a dead tree. As you open it, a terrifying monster materializes on your LEFT side, whispering ancient curses. 'Write a name... and that person will die.' Your hands tremble... The notebook accepts blood offerings.";
-        showCutscene("📓 THE DISCOVERY 📓", introText, "I am the keeper... write a name... feed the pages...", () => {
-            // Monster appears on left - already drawn on canvas, but now emphasize
-            animateMonster(0.6);
-            setTimeout(() => animateMonster(0), 500);
-            monsterWhisper.innerHTML = "👹 'I am always at your left shoulder... Write a name... and witness death.' 👹";
-            gameActive = true;
-            writeBtn.disabled = false;
-            nameInput.disabled = false;
+        function startIntro() {
+            gameActive = false;
+            writeBtn.disabled = true;
+            nameInput.disabled = true;
+            const introText = "You find a decaying notebook under a dead oak. As you open it, a monstrous creature manifests on your LEFT. Its hollow eyes lock onto you. 'Write a name... and that person will die.' The pen quivers in your hand. The curse awakens.";
+            showCutscene("📓 THE DISCOVERY", introText, "Write a name... feed the pages...", () => {
+                gameActive = true;
+                writeBtn.disabled = false;
+                nameInput.disabled = false;
+                nameInput.focus();
+                monsterWhisperDiv.innerHTML = "👹 'I am always at your left... Write a name...' 👹";
+                processing = false;
+            });
+        }
+        
+        function resetGame() {
+            if(currentSpeech) window.speechSynthesis.cancel();
+            if(cutsceneOverlay.style.visibility === "visible") {
+                cutsceneOverlay.style.visibility = "hidden";
+                cutsceneOverlay.style.opacity = "0";
+            }
+            processing = false;
+            gameActive = false;
+            killCount = 0;
+            victims = [];
+            updateUI();
             nameInput.value = "";
-            nameInput.focus();
-            processingAction = false;
+            writeBtn.disabled = true;
+            nameInput.disabled = true;
+            monsterWhisperDiv.innerHTML = "⬛ The shadow stirs... restarting nightmare... ⬛";
+            startIntro();
+        }
+        
+        writeBtn.addEventListener('click', () => {
+            if(gameActive && killCount < MAX_KILLS && !processing) {
+                killPerson(nameInput.value);
+            } else if(killCount >= MAX_KILLS) {
+                showCutscene("END", "Chapter 1 is over. Press restart.", "The chapter is done.", ()=>{});
+            }
         });
-    }
-
-    // FULL RESET CHAPTER
-    function resetChapter() {
-        if (processingAction) {
-            if (currentUtterance) window.speechSynthesis.cancel();
-            forceHideCutscene();
-            processingAction = false;
+        nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') writeBtn.click(); });
+        restartBtn.addEventListener('click', () => { resetGame(); });
+        
+        // animate monster idle, flicker light, particles
+        function animateScene() {
+            requestAnimationFrame(animateScene);
+            time += 0.016;
+            
+            // monster idle: slight bobbing and arm sway
+            if(monsterGroup) {
+                const bobY = Math.sin(time * 1.8) * 0.012;
+                monsterGroup.position.y = -0.2 + bobY;
+                // arms swing
+                const leftArmObj = monsterGroup.children.find(c => c.position.x === -0.75);
+                const rightArmObj = monsterGroup.children.find(c => c.position.x === 0.75);
+                if(leftArmObj) leftArmObj.rotation.z = Math.sin(time * 2.2) * 0.25;
+                if(rightArmObj) rightArmObj.rotation.z = -Math.sin(time * 2.2) * 0.2;
+                // head slight tilt
+                head.rotation.z = Math.sin(time * 1.2) * 0.05;
+                // pulse effect after kill
+                if(monsterPulse > 0) {
+                    const scaleVal = 1 + monsterPulse * 0.08;
+                    monsterGroup.scale.set(scaleVal, scaleVal, scaleVal);
+                    monsterPulse -= 0.03;
+                } else {
+                    monsterGroup.scale.set(1,1,1);
+                }
+            }
+            
+            // notebook floating
+            notebookGroup.position.y = -0.2 + Math.sin(time * 1.5) * 0.01;
+            notebookGroup.rotation.z = Math.sin(time * 0.9) * 0.02;
+            // particles rotation
+            particles.rotation.y += 0.01;
+            
+            // flickering light
+            const intensity = 0.6 + Math.random() * 0.3;
+            flickerLight.intensity = intensity;
+            
+            // camera slight drift for eeriness
+            camera.position.x += (2.2 - camera.position.x) * 0.03;
+            camera.lookAt(0, 0.5, 0);
+            
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
         }
-        // reset game vars
-        killCount = 0;
-        victims = [];
-        gameActive = false;
-        updateVictimList();
-        updateKillCounter();
-        nameInput.value = "";
-        nameInput.disabled = true;
-        writeBtn.disabled = true;
-        // reset monster whisper
-        monsterWhisper.innerHTML = "⬛ The shadow waits... restarting nightmare... ⬛";
-        // redraw monster normal
-        animateMonster(0);
-        // start intro fresh
-        startInitialCutscene();
-    }
-
-    // Event Listeners
-    writeBtn.addEventListener('click', () => {
-        if (!gameActive) {
-            monsterWhisper.innerHTML = "❌ The notebook is silent. Restart or begin chapter?";
-            return;
+        
+        animateScene();
+        resetGame(); // start game with intro
+        
+        // small dynamic CSS2D label for monster name
+        const monsterLabelDiv = document.createElement('div');
+        monsterLabelDiv.textContent = '👁️ THE STALKER 👁️';
+        monsterLabelDiv.style.color = '#ff8888';
+        monsterLabelDiv.style.fontSize = '14px';
+        monsterLabelDiv.style.fontWeight = 'bold';
+        monsterLabelDiv.style.textShadow = '0 0 5px red';
+        const labelObj = new CSS2DObject(monsterLabelDiv);
+        labelObj.position.set(-2.1, 1.2, 0.3);
+        scene.add(labelObj);
+        
+        // add floor mist particles
+        const mistGeo = new THREE.BufferGeometry();
+        const mistCount = 400;
+        const mistPos = [];
+        for(let i=0;i<mistCount;i++) {
+            mistPos.push((Math.random() - 0.5) * 12);
+            mistPos.push(Math.random() * 0.3);
+            mistPos.push((Math.random() - 0.5) * 8 - 1);
         }
-        if (killCount >= MAX_KILLS) {
-            showCutscene("END OF CHAPTER", "Chapter 1 is over. Press restart to experience the curse again.", "No more blood for this chapter...", () => {});
-            return;
+        mistGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(mistPos), 3));
+        const mistMat = new THREE.PointsMaterial({ color: 0x886666, size: 0.03, transparent: true, opacity: 0.3 });
+        const mist = new THREE.Points(mistGeo, mistMat);
+        scene.add(mist);
+        
+        // animate mist slowly
+        function animateMist() {
+            mist.rotation.y += 0.002;
+            requestAnimationFrame(animateMist);
         }
-        const rawName = nameInput.value.trim();
-        if (rawName === "") {
-            monsterWhisper.innerHTML = "⚠️ The monster hisses: 'WRITE A NAME!' ⚠️";
-            return;
+        animateMist();
+        
+        // adjust initial window resize
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
         }
-        killPersonByName(rawName);
-        // clear input field after attempt, but if cutscene is triggered we clear in callback?
-        if (!processingAction) {
-            nameInput.value = "";
-        } else {
-            // will clear after cutscene? we do it inside cutscene callback? but handled already? additional clear for safety
-            setTimeout(() => {
-                if (!processingAction) nameInput.value = "";
-            }, 100);
-        }
-    });
-
-    restartBtn.addEventListener('click', () => {
-        if (processingAction) {
-            if (currentUtterance) window.speechSynthesis.cancel();
-            forceHideCutscene();
-            processingAction = false;
-        }
-        resetChapter();
-    });
-
-    // allow Enter key in input
-    nameInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && gameActive && !processingAction && killCount < MAX_KILLS) {
-            e.preventDefault();
-            writeBtn.click();
-        }
-    });
-
-    // Draw monster initially and set up
-    animateMonster(0);
-    // start game with intro cutscene (auto trigger on page load, but due to user gesture required for voice, the start is triggered by restart? Actually best to show start message and require click? but we call resetChapter on load which calls startInitialCutscene which has user-interaction via cutscene overlay 'Continue' button - but the initial voice requires user interaction? SpeechSynthesis generally needs user gesture on some browsers, but the "Continue" button inside cutscene is a user gesture, and the speech will be triggered inside showCutscene when it speaks. However initial cutscene appears on load, and user must click "CONTINUE" which is a valid gesture. That's fine.
-    window.addEventListener('load', () => {
-        // initial reset + cutscene. show intro message with voice. The click on Continue button invokes speech too.
-        resetChapter(); 
-    });
-
-    // additional cleanup if needed
-    window.addEventListener('beforeunload', () => {
-        if (currentUtterance) window.speechSynthesis.cancel();
-    });
-</script>
+    </script>
 </body>
 </html>
