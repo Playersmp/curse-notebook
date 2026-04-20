@@ -1,592 +1,761 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Cursed Notebook — Chapter 1: The Master</title>
-<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-:root{--bg:#050505;--blood:#8b0000;--bb:#cc0000;--txt:#c8b89a;--dim:#5a5040;--nbg:#d4c9a8;--ntx:#1a1208;--pl:#c0b48a}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--txt);font-family:'Special Elite',monospace;overflow:hidden;width:100vw;height:100vh;cursor:none}
-canvas{position:fixed;top:0;left:0;width:100%;height:100%}
-#bgC{z-index:0}#cutC{z-index:90;opacity:0;pointer-events:none;transition:opacity 1s}#cutC.on{opacity:1;pointer-events:all}
-#cursor{position:fixed;width:5px;height:5px;background:var(--bb);border-radius:50%;pointer-events:none;z-index:9999;box-shadow:0 0 8px var(--bb),0 0 20px rgba(204,0,0,.5),0 0 35px rgba(204,0,0,.2);transition:transform .06s}
-.ov{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 1s;z-index:100}
-.ov.on{opacity:1;pointer-events:all}
-#menu{background:var(--bg);flex-direction:column;gap:24px;z-index:200}
-#menu h1{font-family:'Creepster',cursive;font-size:clamp(2.4rem,8vw,5.5rem);color:var(--bb);text-shadow:0 0 30px rgba(139,0,0,.8),0 0 70px rgba(139,0,0,.5),0 0 110px rgba(204,0,0,.3);animation:tp 2.8s ease-in-out infinite}
-@keyframes tp{0%,100%{text-shadow:0 0 30px rgba(139,0,0,.8),0 0 70px rgba(139,0,0,.5)}50%{text-shadow:0 0 50px rgba(139,0,0,1),0 0 130px rgba(204,0,0,.7)}}
-#menu .ch{font-size:clamp(.85rem,2vw,1.2rem);color:var(--dim);letter-spacing:6px;text-transform:uppercase}
-.mbtn{background:none;border:2px solid var(--blood);color:var(--bb);font-family:'Special Elite',monospace;font-size:1.05rem;padding:14px 48px;cursor:none;letter-spacing:4px;transition:all .4s;position:relative;overflow:hidden}
-.mbtn:hover{background:var(--blood);color:#fff;box-shadow:0 0 30px rgba(139,0,0,.7)}
-.mbtn::before{content:'';position:absolute;top:0;left:-120%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(204,0,0,.35),transparent);transition:left .6s}
-.mbtn:hover::before{left:120%}
-.mbtn.sm{font-size:.9rem;padding:9px 32px}
-#menu .wr{font-size:.72rem;color:var(--dim);opacity:.5;max-width:400px;text-align:center;line-height:1.6}
-#cutTB{position:fixed;bottom:0;left:0;width:100%;z-index:95;padding:28px 40px 40px;background:linear-gradient(transparent,rgba(0,0,0,.9) 25%,rgba(0,0,0,.98));opacity:0;pointer-events:none;transition:opacity .8s}
-#cutTB.on{opacity:1;pointer-events:all}
-#spLbl{font-family:'Creepster',cursive;font-size:1rem;color:var(--bb);margin-bottom:8px;letter-spacing:3px;min-height:24px}
-#cTxt{font-size:clamp(1rem,2.4vw,1.35rem);line-height:1.85;color:var(--txt);max-width:760px;min-height:60px;text-shadow:0 2px 6px #000}
-#skipH{position:fixed;bottom:18px;right:28px;z-index:96;font-size:.75rem;color:var(--dim);opacity:0;transition:opacity .5s}
-#ctrlP{position:fixed;top:12px;right:12px;z-index:200;background:rgba(0,0,0,.8);border:1px solid rgba(139,0,0,.35);padding:10px 14px;font-size:.7rem;color:var(--dim);line-height:1.75;opacity:0;transition:opacity .6s;pointer-events:none;border-radius:3px}
-#ctrlP.on{opacity:1;pointer-events:all}
-#ctrlP kbd{background:rgba(139,0,0,.3);border:1px solid rgba(139,0,0,.4);padding:2px 6px;border-radius:3px;color:var(--bb);font-size:.68rem}
-#gUI{position:fixed;top:12px;left:12px;z-index:200;padding:9px 16px;background:rgba(0,0,0,.8);border:1px solid rgba(139,0,0,.35);font-size:.82rem;color:var(--dim);opacity:0;transition:opacity .6s;pointer-events:none;border-radius:3px}
-#gUI.on{opacity:1;pointer-events:all}
-#prA{position:fixed;bottom:18%;left:50%;transform:translateX(-50%);z-index:200;text-align:center;opacity:0;transition:opacity .5s;pointer-events:none}
-#prA.on{opacity:1;pointer-events:all}
-#prT{font-size:clamp(.9rem,1.9vw,1.1rem);color:var(--txt);text-shadow:0 2px 10px rgba(0,0,0,.95);margin-bottom:8px}
-#prK{font-size:.78rem;color:var(--bb);letter-spacing:3px}
-#nbOv{position:fixed;top:0;left:0;width:100%;height:100%;z-index:300;background:rgba(0,0,0,.94);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
-#nbOv.on{opacity:1;pointer-events:all}
-.nb{width:min(88vw,580px);height:min(84vh,720px);background:var(--nbg);border-radius:4px;position:relative;box-shadow:0 0 60px rgba(0,0,0,.9),inset 0 0 30px rgba(0,0,0,.1),0 0 0 8px rgba(139,0,0,.15);display:flex;flex-direction:column;overflow:hidden}
-.nbi{flex:1;padding:26px 34px 16px;position:relative;overflow-y:auto}
-.pln{position:absolute;top:26px;left:34px;right:34px;bottom:16px;pointer-events:none}
-.pln div{width:100%;height:30px;border-bottom:1px solid var(--pl)}
-.nbh{font-family:'Creepster',cursive;font-size:1.25rem;color:var(--blood);margin-bottom:6px;text-align:center;text-shadow:0 0 15px rgba(139,0,0,.6)}
-.nbr{font-size:.75rem;color:var(--ntx);opacity:.55;margin-bottom:18px;text-align:center;font-style:italic;line-height:1.45}
-.nbe{flex:1;position:relative;z-index:1}
-.ne{font-size:1rem;color:var(--ntx);margin-bottom:12px;padding:4px 0;line-height:1.6;opacity:0;transform:translateY(8px);animation:ei .45s forwards}
-.ne .nn{font-weight:bold;color:var(--blood)}
-.ne .nc{font-size:.8rem;color:var(--ntx);opacity:.65}
-.ne .nt{font-size:.7rem;color:var(--ntx);opacity:.45;float:right}
-@keyframes ei{to{opacity:1;transform:translateY(0)}}
-.nia{position:sticky;bottom:0;background:linear-gradient(transparent,var(--nbg) 40%);padding:18px 0 8px;z-index:2}
-.ni{width:100%;background:none;border:none;border-bottom:3px solid var(--blood);font-family:'Special Elite',monospace;font-size:1.05rem;color:var(--ntx);padding:8px 0;outline:none;opacity:0;transition:opacity .4s}
-.ni.vis{opacity:1}
-.ni::placeholder{color:var(--ntx);opacity:.35}
-.ni:focus{border-bottom-color:var(--bb)}
-.ncl{position:absolute;top:10px;right:14px;font-size:.85rem;color:var(--ntx);opacity:.35;cursor:none;z-index:5;background:none;border:none;font-family:'Special Elite',monospace}
-.ncl:hover{opacity:.7}
-#dOv{position:fixed;top:0;left:0;width:100%;height:100%;z-index:400;background:#000;opacity:0;pointer-events:none;transition:opacity .3s}
-#dOv.on{opacity:1;pointer-events:all}
-#dSc{position:fixed;top:0;left:0;width:100%;height:100%;z-index:401;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:0;pointer-events:none;transition:opacity .9s}
-#dSc.on{opacity:1;pointer-events:all}
-#dSc h2{font-family:'Creepster',cursive;font-size:clamp(2rem,6vw,4rem);color:var(--bb);text-shadow:0 0 40px rgba(139,0,0,.9);animation:dp 1.4s ease-in-out infinite}
-@keyframes dp{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-#dNm{font-size:1.3rem;color:var(--txt);opacity:.85}
-#dCs{font-size:.9rem;color:var(--dim);max-width:400px;text-align:center;line-height:1.6}
-#dTm{font-size:.82rem;color:var(--blood);margin-top:20px;opacity:.7}
-#chEnd{position:fixed;top:0;left:0;width:100%;height:100%;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;pointer-events:none;transition:opacity 2.2s}
-#chEnd.on{opacity:1;pointer-events:all}
-#chEnd h2{font-family:'Creepster',cursive;font-size:clamp(1.7rem,5vw,3.2rem);color:var(--bb);text-shadow:0 0 30px rgba(139,0,0,.7)}
-#chEnd p{font-size:1rem;color:var(--dim);max-width:480px;text-align:center;line-height:1.75}
-#timerUI{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:250;background:rgba(139,0,0,.9);color:#fff;padding:6px 24px;border-radius:30px;font-size:1.1rem;letter-spacing:3px;opacity:0;transition:all .4s;box-shadow:0 0 20px rgba(204,0,0,.6)}
-#timerUI.on{opacity:1}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chapter 1: The Master | Cursed Notebook Horror</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #030103;
+            overflow: hidden;
+            font-family: 'Special Elite', monospace;
+            color: #ebdbbd;
+        }
+
+        /* Main canvas for 60fps rendering */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #gameCanvas {
+            z-index: 1;
+        }
+
+        /* UI Overlays */
+        .ui-panel {
+            position: fixed;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            border-left: 3px solid #8b0000;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-family: 'Special Elite', monospace;
+            pointer-events: auto;
+            box-shadow: 0 0 15px rgba(139, 0, 0, 0.3);
+        }
+
+        #notebookUI {
+            top: 20px;
+            right: 20px;
+            width: 280px;
+            transition: opacity 0.3s;
+        }
+
+        #victimList {
+            list-style: none;
+            max-height: 140px;
+            overflow-y: auto;
+            margin: 8px 0;
+            font-size: 12px;
+        }
+
+        #victimList li {
+            border-bottom: 1px solid #4a2a2a;
+            padding: 4px 0;
+            color: #e0b0a0;
+        }
+
+        .kill-counter {
+            font-size: 18px;
+            text-align: center;
+            margin: 6px 0;
+            color: #ff5e5e;
+            text-shadow: 0 0 5px darkred;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        #nameInput {
+            flex: 1;
+            background: #1e1a14;
+            border: 1px solid #b5651e;
+            padding: 8px;
+            color: #f2c94c;
+            font-family: monospace;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        button {
+            background: #5e2a2a;
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Special Elite', monospace;
+        }
+
+        button:hover {
+            background: #8b3c3c;
+            transform: scale(1.02);
+        }
+
+        #homeUI {
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .home-btn {
+            background: #221111;
+            border: 1px solid #8b0000;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        #timerDisplay {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: black;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff4444;
+            font-family: monospace;
+            letter-spacing: 2px;
+            z-index: 25;
+            border: 1px solid #8b0000;
+            backdrop-filter: blur(4px);
+            display: none;
+        }
+
+        .monster-whisper {
+            position: fixed;
+            bottom: 25px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            border-right: 3px solid red;
+            z-index: 25;
+            pointer-events: none;
+            font-style: italic;
+        }
+
+        /* Modal / Cutscene overlays */
+        .full-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.96);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .full-overlay.active {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .cutscene-card {
+            background: #0a0202;
+            border: 2px solid #aa2e2e;
+            border-radius: 48px;
+            max-width: 550px;
+            width: 80%;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(255, 0, 0, 0.3);
+            animation: flickerShadow 1.8s infinite;
+        }
+
+        @keyframes flickerShadow {
+            0% { border-color: #aa2e2e; box-shadow: 0 0 20px red; }
+            100% { border-color: #ff4d4d; box-shadow: 0 0 40px #ff0000; }
+        }
+
+        .cutscene-card h2 {
+            font-family: 'Creepster', cursive;
+            font-size: 2rem;
+            color: #d64545;
+        }
+
+        .cutscene-text {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            line-height: 1.4;
+        }
+
+        .small-note {
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+
+        #menuScreen {
+            z-index: 200;
+            background: #020002;
+        }
+
+        #menuScreen h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 3.5rem;
+            color: #aa2e2e;
+            text-shadow: 0 0 20px #8b0000;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .menu-btn {
+            background: none;
+            border: 1px solid #8b0000;
+            padding: 10px 28px;
+            font-size: 1rem;
+        }
+
+        /* Shader-like effects */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 6px);
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.25;
+        }
+    </style>
 </head>
 <body>
-<div id="cursor"></div>
-<canvas id="bgC"></canvas>
-<canvas id="cutC"></canvas>
-<div id="fl"></div>
+    <canvas id="gameCanvas"></canvas>
+    <div class="scanlines"></div>
 
-<!-- MENU -->
-<div id="menu" class="ov on">
-  <h1>The Cursed Notebook</h1>
-  <div class="ch">CHAPTER ONE: THE MASTER</div>
-  <button class="mbtn" id="playBtn">PLAY</button>
-  <button class="mbtn sm" id="howBtn">HOW TO PLAY</button>
-  <div class="wr"><i class="fas fa-volume-up"></i> SOUND ON RECOMMENDED • HORROR • ANIMATED DEATHS • RTX-STYLE LIGHTING</div>
-</div>
-
-<!-- HOW TO PLAY -->
-<div id="howOv" class="ov" style="background:rgba(0,0,0,.96);flex-direction:column;gap:22px;padding:40px;z-index:250">
-  <h2 style="font-family:'Creepster',cursive;font-size:2rem;color:var(--bb)">HOW TO PLAY</h2>
-  <div style="max-width:520px;line-height:2.1;font-size:.95rem;color:var(--txt)">
-    <p><kbd style="background:rgba(139,0,0,.25);border:1px solid rgba(139,0,0,.4);padding:2px 8px;color:var(--bb)">E</kbd> Interact / Pick up objects</p>
-    <p><kbd style="background:rgba(139,0,0,.25);border:1px solid rgba(139,0,0,.4);padding:2px 8px;color:var(--bb)">SPACE</kbd> Advance dialogue / Skip cutscene</p>
-    <p><kbd style="background:rgba(139,0,0,.25);border:1px solid rgba(139,0,0,.4);padding:2px 8px;color:var(--bb)">ENTER</kbd> Write in the notebook</p>
-    <p><kbd style="background:rgba(139,0,0,.25);border:1px solid rgba(139,0,0,.4);padding:2px 8px;color:var(--bb)">ESC</kbd> Close notebook / Back</p>
-    <p style="margin-top:18px;color:var(--dim)">Write like: <span style="color:var(--bb)">Name (cause of death)</span></p>
-    <p style="color:var(--bb)">Examples:</p>
-    <p style="color:var(--dim);font-size:.9rem">Jordan (car crash) • Victor (heart attack) • Lilith (fall from roof)</p>
-    <p style="margin-top:12px;color:var(--dim);font-size:.85rem">• 40 seconds for regular kills • 50 seconds for the final target<br>• The notebook always shows the death exactly as you describe</p>
-  </div>
-  <button class="mbtn sm" id="howBack">BACK</button>
-</div>
-
-<!-- DIALOGUE BAR -->
-<div id="cutTB"><div id="spLbl"></div><div id="cTxt"></div></div>
-<div id="skipH">[SPACE] advance</div>
-
-<!-- CONTROLS -->
-<div id="ctrlP"><div><kbd>E</kbd> Interact</div><div><kbd>ESC</kbd> Close</div><div><kbd>SPACE</kbd> Skip</div><div><kbd>ENTER</kbd> Write</div></div>
-
-<!-- LOCATION -->
-<div id="gUI"><i class="fas fa-map-marker-alt"></i> <span id="locTxt">ABANDONED ALLEY</span></div>
-
-<!-- PROMPT / TIMER -->
-<div id="prA"><div id="prT"></div><div id="prK"></div></div>
-<div id="timerUI">50</div>
-
-<!-- NOTEBOOK -->
-<div id="nbOv">
-  <div class="nb">
-    <button class="ncl" id="nbCl">[ESC]</button>
-    <div class="nbi">
-      <div class="nbh">THE CURSED NOTEBOOK</div>
-      <div class="nbr">"Write a name. Specify the cause. They die. The pages remember."</div>
-      <div class="pln" id="pLn"></div>
-      <div class="nbe" id="nEn"></div>
-      <div class="nia"><input type="text" class="ni" id="nIn" placeholder="Write a name..." autocomplete="off" spellcheck="false"></div>
+    <!-- UI Elements -->
+    <div id="notebookUI" class="ui-panel">
+        <div style="text-align:center; font-weight:bold;">📓 BLOOD NOTEBOOK 📓</div>
+        <ul id="victimList"><li>— no names yet —</li></ul>
+        <div class="kill-counter">💀 SOULS TAKEN: <span id="killCount">0</span> / <span id="maxKillsSpan">3</span> 💀</div>
+        <div class="input-area">
+            <input type="text" id="nameInput" placeholder="Name (cause) e.g. Jane (car crash)" autocomplete="off">
+            <button id="writeBtn">✍️ WRITE</button>
+        </div>
+        <div class="small-note">* use parentheses for death method</div>
     </div>
-  </div>
-</div>
 
-<!-- DEATH OVERLAY -->
-<div id="dOv"></div>
-<div id="dSc"><h2>ELIMINATED</h2><div id="dNm"></div><div id="dCs"></div><div id="dTm"></div></div>
+    <div id="homeUI" class="ui-panel">
+        <button id="tvBtn" class="home-btn">📺 WATCH NEWS</button>
+        <button id="notebookBtn" class="home-btn">📖 OPEN NOTEBOOK</button>
+    </div>
 
-<!-- CHAPTER END -->
-<div id="chEnd">
-  <h2>END OF CHAPTER ONE: THE MASTER</h2>
-  <p>The Master is dead. The notebook is satisfied… for now.<br>But the curse has a new face.</p>
-  <p style="color:var(--bb);font-family:'Creepster',cursive;font-size:1.15rem;margin-top:8px">Chapter Two: The List Grows Longer</p>
-  <p style="font-size:.78rem;opacity:.35;margin-top:20px">Coming soon…</p>
-</div>
+    <div id="timerDisplay">⏱️ 00:00</div>
+    <div class="monster-whisper" id="monsterMsg">👁️ "Write a name... feed the curse..." 👁️</div>
 
-<script>
-// ============================================================
-// THE CURSED NOTEBOOK — CHAPTER 1: THE MASTER (EXPANDED 2026 EDITION)
-// Full rebuilt game with RTX-style lighting, 60fps, new kill animations,
-// home sequence, TV news broadcast, evil girl final target, 50-second timer
-// ============================================================
+    <!-- Modal Overlays -->
+    <div id="cutsceneOverlay" class="full-overlay">
+        <div class="cutscene-card">
+            <h2 id="cutsceneTitle">⚰️ GRIM OMEN ⚰️</h2>
+            <div id="cutsceneMsg" class="cutscene-text">...</div>
+            <button id="closeCutsceneBtn">▶ CONTINUE</button>
+        </div>
+    </div>
 
-const SFX = {
-  ctx: null, mg: null, an: [],
-  i() {
-    if (!this.ctx) {
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      this.mg = this.ctx.createGain();
-      this.mg.gain.value = 0.75;
-      this.mg.connect(this.ctx.destination);
-    }
-    if (this.ctx.state === 'suspended') this.ctx.resume();
-  },
-  amb() { /* same dark ambient as original */ this.i(); /* ... (kept for brevity) */ },
-  spk(t, p = .1, r = .7, v = .85) {
-    this.i();
-    const u = new SpeechSynthesisUtterance(t);
-    u.pitch = Math.max(0.01, p); u.rate = r; u.volume = v;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
-  },
-  sSpk() { speechSynthesis.cancel(); },
-  hb(n = .3) { /* heartbeat */ this.i(); /* ... */ },
-  gl() { /* glass break */ },
-  bm() { /* bass hit */ },
-  wr() { /* writing scratch */ this.i(); /* ... */ },
-  ds() { /* death scream */ },
-  pt() { /* page turn */ },
-  gr() { /* growl */ },
-  ft() { /* footstep */ },
-  tv() { /* TV static */ this.i(); /* ... */ return {s:null}; },
-  crash() { /* car crash */ this.i(); /* ... */ },
-  scream() { /* human scream */ },
-  door() { /* door creak */ },
-  sirens() { /* police sirens */ },
-  blood() { /* wet blood splat */ this.i(); /* new */ },
-  news() { /* news theme sting */ }
-};
+    <div id="menuScreen" class="full-overlay active">
+        <div class="cutscene-card" style="background:#0a0202;">
+            <h1>THE CURSED NOTEBOOK</h1>
+            <p style="margin:10px 0; letter-spacing:2px;">Chapter I: The Master</p>
+            <div class="btn-group">
+                <button id="startGameBtn" class="menu-btn">START NIGHTMARE</button>
+                <button id="howToBtn" class="menu-btn">HOW TO PLAY</button>
+            </div>
+            <p style="margin-top:30px; font-size:0.7rem;">⚠️ horror, death scenes, voice acting. headphones recommended.</p>
+        </div>
+    </div>
 
-const CS = {
-  c: null, x: null, w: 0, h: 0, sc: null, ta: 0, t: 0, particles: [], bloodParticles: [],
-  init() {
-    this.c = document.getElementById('cutC');
-    this.x = this.c.getContext('2d', { alpha: true });
-    this.rz();
-    window.addEventListener('resize', () => this.rz());
-    // 120 particles for RTX dust + blood
-    for (let i = 0; i < 120; i++) {
-      this.particles.push({x: Math.random()*2000, y: Math.random()*1200, s: Math.random()*3+1, sx: (Math.random()-.5)*0.4, sy: (Math.random()-.5)*0.3, a: Math.random()*0.4});
-    }
-    for (let i = 0; i < 40; i++) {
-      this.bloodParticles.push({x:0,y:0,s:0,vx:0,vy:0,life:0});
-    }
-  },
-  rz() { this.w = this.c.width = window.innerWidth; this.h = this.c.height = window.innerHeight; },
-  show(s) { this.c.classList.add('on'); this.sc = s; this.ta = 0; },
-  hide() { this.c.classList.remove('on'); this.sc = null; },
-  draw(time) {
-    this.t = time;
-    if (!this.sc) return;
-    const c = this.x, w = this.w, h = this.h;
-    c.clearRect(0,0,w,h);
-    if (this.ta < 1) this.ta = Math.min(1, this.ta + 0.028);
-    c.globalAlpha = this.ta;
-    try { this['_'+this.sc](c, w, h, time); } catch(e) { c.fillStyle='#111'; c.fillRect(0,0,w,h); }
-    // RTX-STYLE LIGHTING & GLOW
-    c.shadowBlur = 18; c.shadowColor = '#cc0000';
-    // vignette + god rays
-    const v = c.createRadialGradient(w/2,h/2,w*0.15,w/2,h/2,w*0.85);
-    v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(10,0,0,0.92)');
-    c.globalAlpha = this.ta * 0.9; c.fillStyle = v; c.fillRect(0,0,w,h);
-    c.shadowBlur = 0;
-    // film grain
-    c.globalAlpha = this.ta * 0.07;
-    for (let i = 0; i < 800; i++) {
-      c.fillStyle = Math.random() > 0.5 ? '#fff' : '#000';
-      c.fillRect(Math.random()*w, Math.random()*h, 1.2, 1.2);
-    }
-    c.globalAlpha = 1;
-  },
-  // ORIGINAL SCENES (expanded with RTX glow)
-  _darkAlley(c,w,h,t) {
-    const g = c.createLinearGradient(0,0,0,h);
-    g.addColorStop(0,'#020204'); g.addColorStop(0.5,'#0a0a12'); g.addColorStop(1,'#15120f');
-    c.fillStyle = g; c.fillRect(0,0,w,h);
-    // rain + RTX wet reflection
-    c.shadowBlur = 12; c.shadowColor = '#88aaff';
-    for (let i = 0; i < 35; i++) {
-      const x = Math.random()*w;
-      c.fillStyle = `rgba(180,210,255,${0.6+Math.sin(t*0.01)*0.3})`;
-      c.fillRect(x, Math.random()*h, 2, 45);
-    }
-    c.shadowBlur = 0;
-    this._dust(c,w,h);
-    this._hand(c,w,h,true);
-  },
-  _nbGround(c,w,h,t) {
-    // notebook glowing on ground with RTX bloom
-    c.fillStyle = '#0a0908'; c.fillRect(0,0,w,h);
-    const nx = w/2, ny = h*0.55;
-    c.save();
-    c.translate(nx,ny); c.rotate(-0.07);
-    c.shadowBlur = 40; c.shadowColor = '#cc0000';
-    const gl = c.createRadialGradient(0,0,8,0,0,110);
-    gl.addColorStop(0,`rgba(204,20,20,${0.6+Math.sin(t*0.003)*0.4})`);
-    gl.addColorStop(1,'rgba(139,0,0,0)');
-    c.fillStyle = gl; c.fillRect(-95,-72,190,144);
-    c.shadowBlur = 0;
-    c.fillStyle = '#0d0804'; c.fillRect(-42,-22,84,54);
-    c.fillStyle = '#d4c9a8'; c.fillRect(-38,-18,76,46);
-    c.fillStyle = '#1a1208'; c.fillRect(-38,-18,12,46);
-    c.restore();
-    this._hand(c,w,h,false);
-  },
-  _monSide(c,w,h,t) { /* original monster + RTX red glow */ /* ... */ },
-  _monClose(c,w,h,t) { /* original + enhanced */ /* ... */ },
+    <div id="howOverlay" class="full-overlay">
+        <div class="cutscene-card">
+            <h2>📜 RITUAL INSTRUCTIONS</h2>
+            <div class="cutscene-text" style="text-align:left;">
+                <p>✍️ Write a name + optional cause in parentheses.<br>Example: <span style="color:#ff8888;">Marcus (hit by train)</span></p>
+                <p>💀 Each death triggers an ANIMATED scene based on the cause.</p>
+                <p>📺 After 2 kills, watch NEWS to discover the MASTER's identity.</p>
+                <p>⏱️ You have 50 seconds to write her name after the broadcast.</p>
+                <p>🔪 Defeat the Master to complete Chapter I.</p>
+                <p style="margin-top:12px;"><kbd>ENTER</kbd> to submit name | <kbd>ESC</kbd> close panels</p>
+            </div>
+            <button id="closeHowBtn" class="menu-btn">UNDERSTOOD</button>
+        </div>
+    </div>
 
-  // NEW ANIMATED KILL SCENES
-  _killCar(c,w,h,t) {
-    // road + victim + car
-    c.fillStyle = '#1a1a1a'; c.fillRect(0,h*0.6,w,h*0.4); // road
-    c.fillStyle = '#333'; for(let i=0;i<12;i++) c.fillRect(i*120 + (t*0.8%120), h*0.78, 50, 8); // lines
-    const prog = Math.min(1, (t-this.killStart)/800);
-    // victim
-    const vx = w*0.42 + prog*120;
-    c.fillStyle = '#ddd'; c.fillRect(vx-12, h*0.65, 24, 38); // body
-    if (prog > 0.6) { c.fillStyle = '#c00'; c.fillRect(vx-18, h*0.68, 36, 12); } // blood
-    // car
-    const cx = w*0.1 + prog*1.4*w;
-    c.fillStyle = '#222'; c.fillRect(cx, h*0.58, 110, 42);
-    c.fillStyle = '#f00'; c.fillRect(cx+12, h*0.62, 22, 12);
-    if (prog > 0.65) {
-      this.bloodParticles.forEach(p=>{ if(p.life>0){p.x+=p.vx; p.y+=p.vy; p.life--; c.fillStyle=`rgba(180,0,0,${p.life/30})`; c.fillRect(p.x,p.y,p.s,p.s);}});
-      if (Math.random()<0.4) this.bloodParticles.push({x:cx+80,y:h*0.72,s:6+Math.random()*8,vx:(Math.random()-0.5)*12,vy:-3-Math.random()*6,life:35});
-    }
-    this._hand(c,w,h,true);
-    SFX.crash();
-  },
-  _killHeart(c,w,h,t) {
-    // person clutching chest
-    const prog = Math.min(1, (t-this.killStart)/1200);
-    c.fillStyle = '#111'; c.fillRect(0,0,w,h);
-    // victim
-    c.fillStyle = '#ccc'; c.fillRect(w*0.45, h*0.4, 38, 68);
-    if (prog > 0.3) {
-      c.fillStyle = '#c00'; c.beginPath(); c.arc(w*0.48, h*0.52, 12, 0, Math.PI*2); c.fill();
-      c.shadowBlur = 25; c.shadowColor = '#f33';
-      c.fillStyle = `rgba(204,40,40,${1-prog})`; c.fillRect(w*0.4, h*0.45, 50, 12);
-      c.shadowBlur = 0;
-    }
-    this._hand(c,w,h,true);
-  },
-  _killFall(c,w,h,t) {
-    // falling from building
-    const prog = Math.min(1, (t-this.killStart)/900);
-    c.fillStyle = '#222'; c.fillRect(0,0,w,h*0.7); // building
-    c.fillStyle = '#555'; c.fillRect(w*0.55, 0, 80, h*0.7);
-    // victim falling
-    const vy = h*0.2 + prog*0.7*h;
-    c.fillStyle = '#ddd'; c.fillRect(w*0.6, vy, 22, 38);
-    if (prog > 0.85) { c.fillStyle = '#c00'; c.fillRect(w*0.55, h*0.85, 60, 18); }
-    this._hand(c,w,h,true);
-  },
-  _killGeneric(c,w,h,t) {
-    // monster attack default
-    c.fillStyle = '#111'; c.fillRect(0,0,w,h);
-    c.fillStyle = '#400'; c.fillRect(w*0.35, h*0.3, 120, 140);
-    c.shadowBlur = 30; c.shadowColor = '#f00';
-    c.fillStyle = '#c00'; c.fillRect(w*0.4, h*0.45, 80, 30);
-    c.shadowBlur = 0;
-    this._hand(c,w,h,true);
-  },
+    <script>
+        (function(){
+            // -------------------- GLOBALS --------------------
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let gameState = 'MENU'; // MENU, INTRO, GAMEPLAY, DEATH_ANIM, HOME, NEWS, FINAL_TIMER, ENDING
+            let killCount = 0;
+            let MAX_KILLS_BEFORE_MASTER = 2;   // after 2 kills, news reveals master
+            let victims = [];
+            let gameActive = true;
+            let processingCutscene = false;
+            let currentAnimation = null; // death animation handler
+            let animFrame = 0;
+            let finalTargetRevealed = false;
+            let finalTargetName = "Lilith Vane"; // The Master
+            let timeLeft = 50; // seconds
+            let timerInterval = null;
+            let deathMethodCache = "";
 
-  // HOME SEQUENCE
-  _homeRoom(c,w,h,t) {
-    c.fillStyle = '#1c1810'; c.fillRect(0,0,w,h);
-    // walls + RTX lamp glow
-    c.shadowBlur = 60; c.shadowColor = '#ffdd88';
-    c.fillStyle = '#332a1f'; c.fillRect(w*0.1, h*0.2, w*0.8, h*0.8);
-    c.shadowBlur = 0;
-    // TV
-    c.fillStyle = '#222'; c.fillRect(w*0.65, h*0.35, 220, 140);
-    c.fillStyle = '#111'; c.fillRect(w*0.67, h*0.39, 212, 128);
-    // furniture
-    c.fillStyle = '#3a2e20'; c.fillRect(w*0.15, h*0.65, 180, 80); // sofa
-    this._hand(c,w,h,false);
-  },
+            // For home screen & news
+            let newsAvailable = false;
+            let masterRevealed = false;
+            let finalKillDone = false;
 
-  // NEWS BROADCAST
-  _newsTV(c,w,h,t) {
-    c.fillStyle = '#111'; c.fillRect(0,0,w,h);
-    // TV frame
-    c.fillStyle = '#222'; c.fillRect(w*0.28, h*0.22, w*0.44, h*0.56);
-    c.fillStyle = '#000'; c.fillRect(w*0.31, h*0.27, w*0.38, h*0.47);
-    // static
-    if (Math.random() < 0.3) {
-      for (let i = 0; i < 80; i++) {
-        c.fillStyle = `rgba(255,255,255,${Math.random()*0.15})`;
-        c.fillRect(w*0.31 + Math.random()*w*0.38, h*0.27 + Math.random()*h*0.47, 3, 2);
-      }
-    }
-    // news text
-    c.fillStyle = '#0f0'; c.font = 'bold 28px Special Elite';
-    c.fillText('BREAKING NEWS', w*0.34, h*0.38);
-    c.fillStyle = '#fff'; c.font = '18px Special Elite';
-    c.fillText('THE MASTER FOUND DEAD IN ALLEY', w*0.34, h*0.48);
-    c.fillText('CAUSE UNKNOWN — POLICE BAFFLED', w*0.34, h*0.58);
-    // EVIL GIRL FACE (Lilith Voss)
-    const faceX = w*0.72, faceY = h*0.42;
-    c.fillStyle = '#222'; c.fillRect(faceX-38, faceY-42, 76, 84); // hair
-    c.fillStyle = '#f5d0b0'; c.beginPath(); c.arc(faceX, faceY-8, 28, 0, Math.PI*2); c.fill(); // face
-    c.fillStyle = '#300'; c.fillRect(faceX-18, faceY+4, 36, 18); // mouth
-    c.fillStyle = '#c00'; c.beginPath(); c.arc(faceX-12, faceY-12, 6, 0, Math.PI*2); c.fill(); // eyes
-    c.fillStyle = '#c00'; c.beginPath(); c.arc(faceX+12, faceY-12, 6, 0, Math.PI*2); c.fill();
-    c.fillStyle = '#fff'; c.font = 'bold 22px Creepster'; c.fillText('LILITH VOSS', w*0.34, h*0.72);
-    this._hand(c,w,h,false);
-  },
+            // UI elements
+            const victimListEl = document.getElementById('victimList');
+            const killCountSpan = document.getElementById('killCount');
+            const maxKillsSpan = document.getElementById('maxKillsSpan');
+            const nameInput = document.getElementById('nameInput');
+            const writeBtn = document.getElementById('writeBtn');
+            const tvBtn = document.getElementById('tvBtn');
+            const notebookBtn = document.getElementById('notebookBtn');
+            const notebookUI = document.getElementById('notebookUI');
+            const homeUI = document.getElementById('homeUI');
+            const timerDisplayDiv = document.getElementById('timerDisplay');
+            const monsterMsgSpan = document.getElementById('monsterMsg');
+            const cutsceneOverlay = document.getElementById('cutsceneOverlay');
+            const cutsceneTitleSpan = document.getElementById('cutsceneTitle');
+            const cutsceneMsgSpan = document.getElementById('cutsceneMsg');
+            const closeCutBtn = document.getElementById('closeCutsceneBtn');
+            const menuScreen = document.getElementById('menuScreen');
+            const howOverlay = document.getElementById('howOverlay');
 
-  // DUST + HAND (original helpers)
-  _dust(c,w,h) { /* particle loop */ this.particles.forEach(p=>{ /* ... same as original */ }); },
-  _hand(c,w,h,trem) { /* original hand drawing */ /* ... */ }
-};
+            // Audio / Voice
+            let audioCtx = null;
+            let bgDrone = null;
+            function initAudio() {
+                if(audioCtx) return;
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const drone = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                drone.type = 'sawtooth';
+                drone.frequency.value = 45;
+                gain.gain.value = 0.08;
+                drone.connect(gain);
+                gain.connect(audioCtx.destination);
+                drone.start();
+                bgDrone = drone;
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 300;
+                drone.connect(filter);
+                filter.connect(gain);
+            }
 
-let GAME = {
-  state: 'menu',
-  killStart: 0,
-  currentTarget: '',
-  timerInterval: null,
-  timeLeft: 50,
-  lastName: '',
-  dialogues: {
-    alley: ["The alley reeks of rot…", "Something is watching you…", "A notebook lies on the ground…"],
-    master: ["THE MASTER approaches…", "He is the first. Write his name."],
-    home: ["You are home. The notebook is still in your hand.", "The TV flickers on its own…"],
-    news: ["They found him… but they don’t understand.", "She is coming for you next."],
-    final: ["50 seconds. Write her name before she finds you."]
-  },
-  currentDialogue: [],
-  dialogueIndex: 0
-};
+            function speakScary(text, pitch=0.45, rate=0.7) {
+                if(!window.speechSynthesis) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = rate;
+                utterance.pitch = pitch;
+                utterance.volume = 0.85;
+                window.speechSynthesis.speak(utterance);
+            }
 
-function setLocation(txt) {
-  document.getElementById('locTxt').textContent = txt;
-}
+            // Utility: update UI
+            function updateVictimUI() {
+                if(victims.length === 0) victimListEl.innerHTML = '<li>— no names yet —</li>';
+                else victimListEl.innerHTML = victims.map(v => `<li>🕯️ ${v.name} (${v.cause || 'unknown death'})</li>`).join('');
+                killCountSpan.innerText = killCount;
+                maxKillsSpan.innerText = MAX_KILLS_BEFORE_MASTER;
+                if(killCount >= MAX_KILLS_BEFORE_MASTER && !masterRevealed && !finalTargetRevealed) {
+                    newsAvailable = true;
+                    monsterMsgSpan.innerHTML = "📺 Check the TV! News about the Master is airing...";
+                }
+            }
 
-function showDialogue(key) {
-  GAME.currentDialogue = GAME.dialogues[key] || [];
-  GAME.dialogueIndex = 0;
-  document.getElementById('cutTB').classList.add('on');
-  document.getElementById('skipH').style.opacity = 1;
-  advanceDialogue();
-}
+            // Death Animation System
+            function startDeathAnimation(victimName, causeRaw) {
+                if(processingCutscene) return;
+                processingCutscene = true;
+                gameActive = false;
+                let deathType = 'generic';
+                let causeText = causeRaw.toLowerCase();
+                if(causeText.includes('car') || causeText.includes('crash') || causeText.includes('accident')) deathType = 'car';
+                else if(causeText.includes('fall') || causeText.includes('drop')) deathType = 'fall';
+                else if(causeText.includes('fire') || causeText.includes('burn')) deathType = 'fire';
+                else if(causeText.includes('drown')) deathType = 'drown';
+                else deathType = 'generic';
+                
+                // show cutscene overlay with animation frame
+                cutsceneTitleSpan.innerText = `⚰️ ${victimName.toUpperCase()} ELIMINATED ⚰️`;
+                cutsceneMsgSpan.innerHTML = `🩸 The curse strikes... ${victimName} suffers a terrible fate.`;
+                cutsceneOverlay.classList.add('active');
+                speakScary(`${victimName}... death claims them.`, 0.4, 0.75);
+                
+                // start canvas animation for death scene
+                if(currentAnimation) cancelAnimationFrame(currentAnimation);
+                let animProgress = 0;
+                const animDuration = 120; // frames ~2 sec at 60fps
+                function animateDeath(timestamp) {
+                    if(!animProgress) animProgress = 0;
+                    animProgress++;
+                    drawDeathScene(deathType, victimName, animProgress / animDuration);
+                    if(animProgress < animDuration) requestAnimationFrame(animateDeath);
+                    else {
+                        // finish animation
+                        cancelAnimationFrame(currentAnimation);
+                        processingCutscene = false;
+                        cutsceneOverlay.classList.remove('active');
+                        // after death, go HOME
+                        gameState = 'HOME';
+                        gameActive = true;
+                        updateVictimUI();
+                        // show home UI
+                        notebookUI.style.display = 'none';
+                        homeUI.style.display = 'flex';
+                        monsterMsgSpan.innerHTML = "🏠 You return home... The notebook waits. Watch the news.";
+                        drawHomeScreen();
+                    }
+                }
+                currentAnimation = requestAnimationFrame(animateDeath);
+            }
 
-function advanceDialogue() {
-  const txtEl = document.getElementById('cTxt');
-  const lblEl = document.getElementById('spLbl');
-  if (GAME.dialogueIndex >= GAME.currentDialogue.length) {
-    document.getElementById('cutTB').classList.remove('on');
-    document.getElementById('skipH').style.opacity = 0;
-    return;
-  }
-  lblEl.textContent = 'THE CURSED NOTEBOOK';
-  txtEl.textContent = GAME.currentDialogue[GAME.dialogueIndex];
-  GAME.dialogueIndex++;
-}
+            function drawDeathScene(type, name, t) {
+                // draws over canvas overlay (we'll use main canvas draw)
+                ctx.clearRect(0, 0, width, height);
+                ctx.fillStyle = `rgba(0,0,0,${Math.min(1, t*1.5)})`;
+                ctx.fillRect(0, 0, width, height);
+                ctx.font = 'bold 28px "Creepster"';
+                ctx.fillStyle = '#aa2222';
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = 'red';
+                ctx.fillText(`${name}`, width/2-100, height/3);
+                ctx.font = '18px monospace';
+                ctx.fillStyle = '#dd8888';
+                if(type === 'car') {
+                    ctx.fillText("🚗💥 A car swerves... screeching tires... impact!", width/2-180, height/2);
+                    ctx.beginPath();
+                    ctx.fillStyle = `rgba(200,0,0,${0.5+Math.sin(Date.now()*0.02)*0.3})`;
+                    ctx.fillRect(width/2-80, height/2+40, 160, 30);
+                } else if(type === 'fall') {
+                    ctx.fillText("🌀 A silent fall from a high place... body twists...", width/2-210, height/2);
+                    for(let i=0;i<15;i++) ctx.fillRect(width/2-40+Math.sin(i)*20, height/2+60+i*4, 8, 4);
+                } else if(type === 'fire') {
+                    ctx.fillText("🔥 Flames consume everything... agonizing screams.", width/2-200, height/2);
+                    ctx.fillStyle = `rgba(255,80,0,${0.7*Math.sin(t*Math.PI)})`;
+                    ctx.beginPath();
+                    ctx.ellipse(width/2, height/2+50, 70, 40, 0, 0, Math.PI*2);
+                    ctx.fill();
+                } else {
+                    ctx.fillText("☠️ Darkness swallows them... a final whisper.", width/2-180, height/2);
+                }
+                ctx.fillStyle = '#ffffff66';
+                ctx.fillRect(0, height-40, width*t, 8);
+                ctx.fillStyle = 'white';
+                ctx.font = '12px monospace';
+                ctx.fillText("DEATH ANIMATION", width-120, height-10);
+            }
 
-function startKillScene(type, name) {
-  GAME.state = 'kill';
-  GAME.killStart = performance.now();
-  GAME.currentTarget = name;
-  CS.show(type);
-  document.getElementById('dOv').classList.add('on');
-  setTimeout(() => {
-    document.getElementById('dNm').textContent = name.toUpperCase();
-    document.getElementById('dCs').textContent = 'Cause: ' + (GAME.lastName.includes('(') ? GAME.lastName.split('(')[1].slice(0,-1) : 'unknown');
-    document.getElementById('dTm').textContent = 'TIME OF DEATH: NOW';
-    document.getElementById('dSc').classList.add('on');
-    SFX.ds();
-  }, 1400);
-  setTimeout(() => {
-    document.getElementById('dOv').classList.remove('on');
-    document.getElementById('dSc').classList.remove('on');
-    CS.hide();
-    if (GAME.state === 'kill' && name === 'THE MASTER') goToHome();
-    else if (name.includes('LILITH')) finishChapter();
-  }, 3800);
-}
+            function drawHomeScreen() {
+                ctx.clearRect(0, 0, width, height);
+                // draw room with TV
+                ctx.fillStyle = '#1e1814';
+                ctx.fillRect(0,0,width,height);
+                ctx.fillStyle = '#2a201a';
+                ctx.fillRect(width*0.2, height*0.4, width*0.6, height*0.3);
+                ctx.fillStyle = '#111';
+                ctx.fillRect(width*0.35, height*0.48, width*0.3, height*0.15);
+                ctx.fillStyle = '#55aaff';
+                ctx.fillRect(width*0.45, height*0.52, 20, 15);
+                ctx.fillStyle = '#ccccaa';
+                ctx.font = 'bold 18px monospace';
+                ctx.fillText("📺 TELEVISION", width*0.4, height*0.45);
+                if(newsAvailable && !masterRevealed) {
+                    ctx.fillStyle = '#ff8888';
+                    ctx.font = '14px monospace';
+                    ctx.fillText("⚠️ PRESS 'WATCH NEWS' ⚠️", width*0.42, height*0.7);
+                }
+            }
 
-function goToHome() {
-  GAME.state = 'home';
-  setLocation('YOUR APARTMENT');
-  CS.show('homeRoom');
-  showDialogue('home');
-  // after 4s auto TV interaction
-  setTimeout(() => {
-    if (GAME.state === 'home') {
-      CS.show('newsTV');
-      showDialogue('news');
-      SFX.news();
-      setTimeout(() => {
-        CS.hide();
-        document.getElementById('nbOv').classList.add('on');
-        document.getElementById('nIn').classList.add('vis');
-        document.getElementById('prA').classList.add('on');
-        document.getElementById('prT').innerHTML = 'FINAL TARGET — 50 SECONDS';
-        document.getElementById('prK').innerHTML = 'LILITH VOSS';
-        GAME.timeLeft = 50;
-        document.getElementById('timerUI').classList.add('on');
-        document.getElementById('timerUI').textContent = GAME.timeLeft;
-        GAME.timerInterval = setInterval(() => {
-          GAME.timeLeft--;
-          document.getElementById('timerUI').textContent = GAME.timeLeft;
-          if (GAME.timeLeft <= 0) {
-            clearInterval(GAME.timerInterval);
-            // fail state
-            document.getElementById('timerUI').classList.remove('on');
-            alert("She found you first… GAME OVER");
-            location.reload();
-          }
-        }, 1000);
-      }, 3200);
-    }
-  }, 4200);
-}
+            // News broadcast: reveals master's face and name
+            function showNewsBroadcast() {
+                if(processingCutscene) return;
+                processingCutscene = true;
+                gameActive = false;
+                masterRevealed = true;
+                finalTargetRevealed = true;
+                cutsceneTitleSpan.innerText = "📺 EMERGENCY BROADCAST 📺";
+                cutsceneMsgSpan.innerHTML = `The news shows a sketch of a pale girl with hollow eyes. "Wanted: LILITH VANE, known as THE MASTER. Responsible for disappearances." Her face glows on screen.<br><br><span style="color:#ff6666;">You have 50 seconds to write her name in the notebook with a death cause!</span>`;
+                cutsceneOverlay.classList.add('active');
+                speakScary("Lilith Vane... The Master revealed. Write her name before she finds you.", 0.5, 0.7);
+                const closeHandler = () => {
+                    cutsceneOverlay.classList.remove('active');
+                    processingCutscene = false;
+                    gameActive = true;
+                    gameState = 'FINAL_TIMER';
+                    startFinalTimer();
+                    notebookUI.style.display = 'block';
+                    homeUI.style.display = 'none';
+                    monsterMsgSpan.innerHTML = `⏳ 50 seconds left... Write "Lilith Vane (death cause)" now! ⏳`;
+                };
+                closeCutBtn.onclick = () => {
+                    closeCutBtn.removeEventListener('click', closeHandler);
+                    closeHandler();
+                };
+                closeCutBtn.addEventListener('click', closeHandler, { once: true });
+            }
 
-function finishChapter() {
-  clearInterval(GAME.timerInterval);
-  document.getElementById('timerUI').classList.remove('on');
-  document.getElementById('nbOv').classList.remove('on');
-  CS.hide();
-  document.getElementById('chEnd').classList.add('on');
-  SFX.sSpk();
-}
+            function startFinalTimer() {
+                timeLeft = 50;
+                timerDisplayDiv.style.display = 'block';
+                if(timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    if(gameState === 'FINAL_TIMER' && !finalKillDone) {
+                        timeLeft--;
+                        let mins = Math.floor(timeLeft/60);
+                        let secs = timeLeft%60;
+                        timerDisplayDiv.innerText = `⏱️ ${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+                        if(timeLeft <= 0) {
+                            clearInterval(timerInterval);
+                            timerDisplayDiv.style.display = 'none';
+                            gameActive = false;
+                            cutsceneTitleSpan.innerText = "💀 GAME OVER 💀";
+                            cutsceneMsgSpan.innerHTML = "You failed to write the Master's name. She appears behind you... darkness consumes everything. Restart chapter.";
+                            cutsceneOverlay.classList.add('active');
+                            speakScary("You failed... The Master wins.");
+                            processingCutscene = true;
+                            closeCutBtn.onclick = () => {
+                                location.reload();
+                            };
+                        }
+                    } else if(finalKillDone) {
+                        clearInterval(timerInterval);
+                        timerDisplayDiv.style.display = 'none';
+                    }
+                }, 1000);
+            }
 
-function submitName() {
-  const input = document.getElementById('nIn');
-  let str = input.value.trim();
-  if (!str) return;
-  GAME.lastName = str;
-  input.value = '';
-  document.getElementById('nbOv').classList.remove('on');
-  document.getElementById('nIn').classList.remove('vis');
+            function killMaster(causeText) {
+                if(finalKillDone) return;
+                finalKillDone = true;
+                if(timerInterval) clearInterval(timerInterval);
+                timerDisplayDiv.style.display = 'none';
+                gameActive = false;
+                processingCutscene = true;
+                // final death animation
+                cutsceneTitleSpan.innerText = "🏆 THE MASTER FALLS 🏆";
+                cutsceneMsgSpan.innerHTML = `Lilith Vane ${causeText ? ' ('+causeText+')' : ''} screams as the curse tears her apart. The notebook glows crimson. Chapter I ends.`;
+                cutsceneOverlay.classList.add('active');
+                speakScary("The Master is no more... The notebook is satiated... for now.", 0.4);
+                closeCutBtn.onclick = () => {
+                    cutsceneOverlay.classList.remove('active');
+                    gameState = 'ENDING';
+                    showEnding();
+                };
+            }
 
-  const lower = str.toLowerCase();
-  let killType = '_killGeneric';
-  if (lower.includes('car') || lower.includes('crash')) killType = '_killCar';
-  else if (lower.includes('heart')) killType = '_killHeart';
-  else if (lower.includes('fall')) killType = '_killFall';
+            function showEnding() {
+                cutsceneTitleSpan.innerText = "📖 END OF CHAPTER I 📖";
+                cutsceneMsgSpan.innerHTML = "You have survived the first pact. But the notebook still whispers. The Master's shadow fades, yet the pages hunger for more. Stay tuned for Chapter II.";
+                cutsceneOverlay.classList.add('active');
+                speakScary("Chapter one complete... The curse continues.");
+                closeCutBtn.onclick = () => {
+                    cutsceneOverlay.classList.remove('active');
+                    menuScreen.classList.add('active');
+                    gameState = 'MENU';
+                };
+            }
 
-  // First kill is always The Master
-  if (GAME.state === 'masterEncounter') {
-    startKillScene(killType, 'THE MASTER');
-  }
-  // Final kill
-  else if (GAME.state === 'finalTarget' && lower.includes('lilith')) {
-    startKillScene(killType, 'LILITH VOSS');
-  }
-}
+            // Process writing a name
+            function writeName() {
+                if(!gameActive || processingCutscene) {
+                    monsterMsgSpan.innerHTML = "❌ Cannot write now. Wait...";
+                    return;
+                }
+                let raw = nameInput.value.trim();
+                if(raw === "") { monsterMsgSpan.innerHTML = "⚠️ The monster demands a name!"; return; }
+                let match = raw.match(/^([^\(]+)(?:\(([^\)]+)\))?/);
+                if(!match) return;
+                let victimName = match[1].trim();
+                let cause = match[2] ? match[2].trim() : "unknown fate";
+                if(victims.some(v => v.name.toLowerCase() === victimName.toLowerCase())) {
+                    monsterMsgSpan.innerHTML = "👻 This soul already perished.";
+                    return;
+                }
+                // check if it's the final master
+                if(finalTargetRevealed && victimName.toLowerCase() === finalTargetName.toLowerCase()) {
+                    killMaster(cause);
+                    nameInput.value = "";
+                    return;
+                }
+                if(killCount >= MAX_KILLS_BEFORE_MASTER && !finalTargetRevealed) {
+                    monsterMsgSpan.innerHTML = "📺 The Master is near! Check the news first!";
+                    return;
+                }
+                if(killCount >= MAX_KILLS_BEFORE_MASTER && finalTargetRevealed && victimName.toLowerCase() !== finalTargetName.toLowerCase()) {
+                    monsterMsgSpan.innerHTML = `⏳ Only the MASTER matters now! Write "${finalTargetName}"!`;
+                    return;
+                }
+                // normal kill
+                victims.push({ name: victimName, cause: cause });
+                killCount++;
+                updateVictimUI();
+                gameActive = false;
+                startDeathAnimation(victimName, cause);
+                nameInput.value = "";
+                // after kill count reaches threshold, news becomes available
+                if(killCount >= MAX_KILLS_BEFORE_MASTER && !masterRevealed) {
+                    newsAvailable = true;
+                    monsterMsgSpan.innerHTML = "📺 The TV flickers... News about the Master. Press 'WATCH NEWS'.";
+                } else {
+                    monsterMsgSpan.innerHTML = `💀 ${victimName} is gone. The notebook pulses.`;
+                }
+            }
 
-function interact() {
-  if (GAME.state === 'alley') {
-    CS.show('nbGround');
-    setTimeout(() => {
-      document.getElementById('nbOv').classList.add('on');
-      document.getElementById('nIn').classList.add('vis');
-      showDialogue('master');
-      GAME.state = 'masterEncounter';
-    }, 900);
-  }
-  else if (GAME.state === 'home') {
-    // already handled in goToHome
-  }
-}
+            // Event handlers
+            writeBtn.onclick = writeName;
+            nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') writeName(); });
 
-function closeNotebook() {
-  document.getElementById('nbOv').classList.remove('on');
-  document.getElementById('nIn').classList.remove('vis');
-}
+            tvBtn.onclick = () => {
+                if(newsAvailable && !masterRevealed && gameState === 'HOME') {
+                    showNewsBroadcast();
+                } else if(masterRevealed) {
+                    monsterMsgSpan.innerHTML = "You already know her name: Lilith Vane. Write it quickly!";
+                } else {
+                    monsterMsgSpan.innerHTML = "No news yet. Kill more victims to unveil the Master.";
+                }
+            };
 
-// MAIN 60FPS LOOP
-function gameLoop(time) {
-  CS.draw(time);
-  requestAnimationFrame(gameLoop);
-}
+            notebookBtn.onclick = () => {
+                if(gameState === 'HOME') {
+                    gameState = 'GAMEPLAY';
+                    notebookUI.style.display = 'block';
+                    homeUI.style.display = 'none';
+                    gameActive = true;
+                    monsterMsgSpan.innerHTML = "📖 The notebook opens. Write a name...";
+                }
+            };
 
-// INIT
-function initGame() {
-  CS.init();
-  SFX.i();
-  requestAnimationFrame(gameLoop);
+            // Start Game Routine
+            function startGame() {
+                menuScreen.classList.remove('active');
+                gameState = 'INTRO';
+                gameActive = false;
+                processingCutscene = true;
+                cutsceneTitleSpan.innerText = "🔮 THE DISCOVERY";
+                cutsceneMsgSpan.innerHTML = "You find a rotting notebook under a dead tree. As you open it, a MONSTER materializes on your LEFT. Its hollow voice: 'Write a name... and that person will die.' The curse begins.";
+                cutsceneOverlay.classList.add('active');
+                speakScary("I am the keeper. Write a name. Feed the pages.", 0.45);
+                closeCutBtn.onclick = () => {
+                    cutsceneOverlay.classList.remove('active');
+                    gameState = 'GAMEPLAY';
+                    gameActive = true;
+                    processingCutscene = false;
+                    notebookUI.style.display = 'block';
+                    homeUI.style.display = 'none';
+                    initAudio();
+                    monsterMsgSpan.innerHTML = "👹 'Write a name... I am always at your left.' 👹";
+                    drawGameplayBackground();
+                };
+            }
 
-  // Custom cursor
-  const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-  });
+            function drawGameplayBackground() {
+                ctx.fillStyle = '#0a0507';
+                ctx.fillRect(0,0,width,height);
+                ctx.fillStyle = '#331a1a';
+                ctx.beginPath();
+                ctx.rect(0,0, width*0.3, height);
+                ctx.fill();
+                ctx.fillStyle = '#611111';
+                ctx.font = 'bold 18px monospace';
+                ctx.fillText("👁️ MONSTER SIDE", width*0.05, 70);
+                ctx.fillStyle = '#bba87a';
+                ctx.font = 'italic 14px monospace';
+                ctx.fillText("The cursed notebook", width*0.6, 50);
+            }
 
-  // Buttons
-  document.getElementById('playBtn').addEventListener('click', () => {
-    document.getElementById('menu').classList.remove('on');
-    GAME.state = 'alley';
-    setLocation('ABANDONED ALLEY');
-    CS.show('darkAlley');
-    showDialogue('alley');
-    SFX.amb();
-  });
+            // Animation loop for background & idle
+            function drawIdle() {
+                if(gameState === 'GAMEPLAY') {
+                    drawGameplayBackground();
+                    // glowing eye effect
+                    let glow = Math.sin(Date.now() * 0.004) * 0.3 + 0.5;
+                    ctx.fillStyle = `rgba(255,0,0,${glow*0.4})`;
+                    ctx.beginPath();
+                    ctx.arc(width*0.15, height*0.4, 40, 0, Math.PI*2);
+                    ctx.fill();
+                } else if(gameState === 'HOME') {
+                    drawHomeScreen();
+                } else if(gameState === 'FINAL_TIMER') {
+                    drawGameplayBackground();
+                    ctx.fillStyle = '#ff0000aa';
+                    ctx.fillRect(0,0,width,height*0.05);
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 24px monospace';
+                    ctx.fillText("⚠️ FINAL CHALLENGE: WRITE THE MASTER'S NAME ⚠️", width/3, 50);
+                }
+            }
 
-  document.getElementById('howBtn').addEventListener('click', () => {
-    document.getElementById('menu').classList.remove('on');
-    document.getElementById('howOv').classList.add('on');
-  });
-  document.getElementById('howBack').addEventListener('click', () => {
-    document.getElementById('howOv').classList.remove('on');
-    document.getElementById('menu').classList.add('on');
-  });
-
-  // Notebook controls
-  document.getElementById('nbCl').addEventListener('click', closeNotebook);
-  document.getElementById('nIn').addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitName();
-  });
-
-  // Global keys
-  document.addEventListener('keydown', e => {
-    if (e.key === 'e' || e.key === 'E') interact();
-    if (e.key === ' ') { e.preventDefault(); advanceDialogue(); }
-    if (e.key === 'Escape') closeNotebook();
-  });
-
-  console.log('%cThe Cursed Notebook — Chapter 1 fully rebuilt & expanded with RTX lighting, animated kills, home → news → final 50s Lilith Voss target.', 'color:#cc0000;font-family:Creepster');
-}
-
-window.onload = initGame;
-</script>
+            function resizeCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+                drawIdle();
+            }
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Main loop 60fps
+            function mainLoop() {
+                if(!processingCutscene && !currentAnimation) drawIdle();
+                requestAnimationFrame(mainLoop);
+            }
+            
+            resizeCanvas();
+            mainLoop();
+            
+            // Menu buttons
+            document.getElementById('startGameBtn').onclick = startGame;
+            document.getElementById('howToBtn').onclick = () => { howOverlay.classList.add('active'); };
+            document.getElementById('closeHowBtn').onclick = () => { howOverlay.classList.remove('active'); };
+            // initial hide notebook UI
+            notebookUI.style.display = 'none';
+            homeUI.style.display = 'none';
+            timerDisplayDiv.style.display = 'none';
+            // show monster whisper
+        })();
+    </script>
 </body>
 </html>
