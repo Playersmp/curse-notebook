@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>CHAPTER 1: THE CURSED NOTEBOOK | Death Note Horror Game</title>
+    <style>
+        * {
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0a0a0a, #010101);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', 'Creepster', 'Segoe UI', monospace;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Main Game Container */
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 32px;
+            backdrop-filter: blur(3px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid #4a2a1e;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* cutscene overlay (voice + scary) */
+        .cutscene-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Courier New', monospace;
+            transition: opacity 0.5s;
+            opacity: 1;
+        }
+
+        .cutscene-box {
+            background: #1e0f0b;
+            border: 3px solid #aa3e1c;
+            border-radius: 24px;
+            padding: 30px 40px;
+            max-width: 700px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 35px rgba(180, 40, 20, 0.6);
+            animation: flicker 2s infinite;
+        }
+
+        @keyframes flicker {
+            0% { border-color: #aa3e1c; box-shadow: 0 0 5px #aa3e1c;}
+            50% { border-color: #d45a2c; box-shadow: 0 0 20px #d45a2c;}
+            100% { border-color: #7a2a10; box-shadow: 0 0 5px #7a2a10;}
+        }
+
+        .cutscene-text {
+            font-size: 1.7rem;
+            color: #fad3b0;
+            text-shadow: 0 0 5px red;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .cutscene-sub {
+            color: #bd8a6a;
+            font-size: 1rem;
+            margin-top: 15px;
+        }
+
+        .skip-btn {
+            background: #2c1810;
+            border: 1px solid #8b3a22;
+            color: #eebb99;
+            font-family: monospace;
+            font-size: 1rem;
+            margin-top: 30px;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .skip-btn:hover {
+            background: #4a2518;
+            color: white;
+            border-color: #ff7744;
+        }
+
+        /* Main game UI */
+        .game-header {
+            background: #120904;
+            padding: 12px 20px;
+            border-bottom: 2px solid #542a1a;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: #ebb07a;
+            text-shadow: 0 0 2px #3a1a0a;
+        }
+
+        .chapter-badge {
+            background: #2d170e;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+
+        .monster-warning {
+            color: #ff6644;
+            background: #1f0c06;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .visual-novel-area {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .monster-panel {
+            background: #070202;
+            border-radius: 24px;
+            margin-bottom: 20px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 8px solid #c04522;
+        }
+
+        .monster-icon {
+            font-size: 3rem;
+            filter: drop-shadow(0 0 4px red);
+            animation: tremor 0.2s infinite;
+        }
+
+        @keyframes tremor {
+            0% { transform: translate(0px, 0px);}
+            25% { transform: translate(1px, -1px);}
+            50% { transform: translate(-1px, 1px);}
+            75% { transform: translate(1px, 1px);}
+            100% { transform: translate(0,0);}
+        }
+
+        .monster-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #e06844;
+            background: #1c0a05;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .notebook-area {
+            background: #2a1c13;
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: inset 0 0 8px #00000055, 0 5px 12px black;
+            margin: 10px 0;
+            border: 1px solid #ad6b48;
+        }
+
+        .notebook-title {
+            font-size: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #f5cba0;
+            text-align: center;
+            border-bottom: 1px dashed #b35f38;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .death-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .death-input-group input {
+            flex: 3;
+            background: #0e0704;
+            border: 2px solid #794d33;
+            padding: 12px;
+            font-size: 1.1rem;
+            color: #ffcba4;
+            font-family: monospace;
+            border-radius: 60px;
+            outline: none;
+        }
+
+        .death-input-group input:focus {
+            border-color: #db6a3a;
+            box-shadow: 0 0 8px #e05a2a;
+        }
+
+        .kill-btn {
+            background: #631f0a;
+            border: none;
+            font-weight: bold;
+            color: white;
+            font-family: monospace;
+            padding: 0 20px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.15s linear;
+            box-shadow: 0 2px 5px black;
+        }
+
+        .kill-btn:hover {
+            background: #a23412;
+            transform: scale(0.97);
+            letter-spacing: 1px;
+        }
+
+        .log-area {
+            background: #000000aa;
+            border-radius: 20px;
+            padding: 12px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            font-family: monospace;
+            border: 1px solid #3b2a1f;
+        }
+
+        .death-log {
+            color: #f0aa7a;
+            border-left: 3px solid #ff6a2e;
+            padding: 4px 10px;
+            margin: 6px 0;
+            background: #1c0f0a70;
+        }
+
+        .voice-note {
+            color: #b3ffcf;
+            font-style: italic;
+        }
+
+        .reset-btn {
+            background: #2c1a12;
+            border: 1px solid #884f30;
+            color: #e6b18c;
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.1s;
+            font-weight: bold;
+        }
+
+        .reset-btn:hover {
+            background: #4f2c1c;
+            color: white;
+        }
+
+        .stat-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #bda68a;
+            padding: 5px 10px;
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 12px;
+            color: #5f4a38;
+            border-top: 1px solid #2f1d12;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="gameContainer">
+    <div class="game-header">
+        <span>📓 DEATH NOTEBOOK — CHAPTER I</span>
+        <span class="monster-warning" id="monsterSideIndicator">👁️ MONSTER ON YOUR LEFT</span>
+        <span class="chapter-badge">✦ THE AWAKENING ✦</span>
+    </div>
+
+    <div class="visual-novel-area">
+        <div class="monster-panel">
+            <div class="monster-icon">👹🌀</div>
+            <div class="monster-text" id="monsterDialogue">"Write... a name... and they die..."</div>
+            <div class="monster-icon">🗣️👻</div>
+        </div>
+
+        <div class="notebook-area">
+            <div class="notebook-title">✍️ THE FORBIDDEN NOTEBOOK ✍️</div>
+            <div class="death-input-group">
+                <input type="text" id="victimName" placeholder="Enter a full name... (e.g., Victor Black)" autocomplete="off">
+                <button id="killButton" class="kill-btn">⚰️ WRITE NAME ⚰️</button>
+            </div>
+            <div class="stat-bar">
+                <span>📜 Souls reaped: <span id="deathCount">0</span></span>
+                <span>👹 Monster's hunger: <span id="hungerMeter">0%</span></span>
+            </div>
+        </div>
+
+        <div class="log-area" id="logArea">
+            <div class="death-log">✨ A boy named Leo finds an old notebook on the ground... ✨</div>
+            <div class="death-log">👤 As he opens it, a <span style="color:#ff7e47;">twisted shadow</span> appears on his LEFT side...</div>
+            <div class="death-log voice-note">🎭 [WHISPERING VOICE]: "Welcome... little scribe. Write a name... feel the power."</div>
+        </div>
+
+        <button id="resetGameBtn" class="reset-btn">🕯️ BURY THE NOTEBOOK (RESET) 🕯️</button>
+    </div>
+    <footer>⚠️ Cursed chapter — Every name ends a life. The monster grows stronger...</footer>
+</div>
+
+<script>
+    // ---------- GAME STATE ----------
+    let deathToll = 0;
+    let hunger = 0;          // 0 to 100, increases per kill
+    let usedNames = new Set();   // prevent same name twice (story integrity)
+    
+    // Voice scary lines library (random for atmosphere)
+    const scaryVoiceLines = [
+        "Heh... another soul descends into the abyss...",
+        "The ink is blood... the name is a tombstone...",
+        "Did you hear their last scream? I did...",
+        "Keep writing, little puppet... the monster feeds...",
+        "Your heart races... but you cannot stop now...",
+        "The left side grows darker... the creature grins...",
+        "There is no forgiveness... only names and death..."
+    ];
+    
+    // Monster dialogues based on hunger thresholds (progression)
+    const monsterComments = {
+        0: ["Write... a name... and they die...", "I see you... on your left... forever.", "Try me... write anyone's name..."],
+        1: ["More... more deaths...", "Yes... the notebook sings!", "Your conscience is fading..."],
+        2: ["Hahaha... again!", "The hunger grows... give me souls!", "You're becoming like me..."],
+        3: ["I can taste their fear... keep going!", "The notebook is now yours... forever...", "No turning back, child of death."]
+    };
+    
+    // DOM elements
+    const victimInput = document.getElementById('victimName');
+    const killBtn = document.getElementById('killButton');
+    const deathCountSpan = document.getElementById('deathCount');
+    const hungerMeterSpan = document.getElementById('hungerMeter');
+    const logArea = document.getElementById('logArea');
+    const monsterDialogueSpan = document.getElementById('monsterDialogue');
+    const resetBtn = document.getElementById('resetGameBtn');
+    const monsterSideIndicator = document.getElementById('monsterSideIndicator');
+    
+    // Helper: add log entry (with special voice tag sometimes)
+    function addLogEntry(message, isVoice = false) {
+        const logDiv = document.createElement('div');
+        logDiv.className = 'death-log';
+        if (isVoice) {
+            logDiv.classList.add('voice-note');
+            logDiv.innerHTML = `🎙️ [SCARY VOICE]: "${message}"`;
+        } else {
+            logDiv.innerText = message;
+        }
+        logArea.appendChild(logDiv);
+        logDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // keep log tidy but no limit extreme
+        if (logArea.children.length > 25) {
+            logArea.removeChild(logArea.children[0]);
+        }
+    }
+    
+    // play voice cutscene (scary voice + overlay) - triggered on important events
+    function showVoiceCutscene(line, callback) {
+        // create cutscene overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'cutscene-overlay';
+        overlay.innerHTML = `
+            <div class="cutscene-box">
+                <div class="cutscene-text">👁️🗨️ ${line} 👁️🗨️</div>
+                <div class="cutscene-sub">⚡ a whispering voice echoes from the left side ⚡</div>
+                <button class="skip-btn" id="cutsceneSkipBtn">⏎ continue...</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        
+        // play a spooky audio-like effect using Web Audio (simple oscillator for ambiance)
+        let audioCtx = null;
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = 180;
+            gain.gain.value = 0.08;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+            osc.stop(audioCtx.currentTime + 1.2);
+        } catch(e) { console.log("audio not supported"); }
+        
+        const skipBtn = overlay.querySelector('#cutsceneSkipBtn');
+        const closeCutscene = () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                if (overlay.parentNode) overlay.remove();
+                if (callback) callback();
+            }, 300);
+        };
+        skipBtn.addEventListener('click', closeCutscene);
+        // auto close after 4 seconds? but manual is better.
+        setTimeout(() => {
+            if (overlay.parentNode) closeCutscene();
+        }, 7000);
+    }
+    
+    // update UI: death count + hunger meter, monster text based on hunger tier
+    function updateUI() {
+        deathCountSpan.innerText = deathToll;
+        hungerMeterSpan.innerText = hunger + '%';
+        
+        // update monster dialogue by hunger tier
+        let tier = 0;
+        if (hunger >= 70) tier = 3;
+        else if (hunger >= 40) tier = 2;
+        else if (hunger >= 15) tier = 1;
+        else tier = 0;
+        
+        const commentsList = monsterComments[tier];
+        let newMsg = commentsList[Math.floor(Math.random() * commentsList.length)];
+        monsterDialogueSpan.innerText = newMsg;
+        
+        // dynamic left side indicator
+        if (hunger >= 60) {
+            monsterSideIndicator.innerHTML = "👹👈 MONSTER ON LEFT — IT'S SMILING WIDELY";
+            monsterSideIndicator.style.color = "#ff7e5e";
+        } else if (hunger >= 25) {
+            monsterSideIndicator.innerHTML = "🌀👁️ MONSTER ON LEFT — WHISPERING";
+            monsterSideIndicator.style.color = "#ffaa88";
+        } else {
+            monsterSideIndicator.innerHTML = "👤👈 MONSTER ON LEFT — OBSERVING";
+            monsterSideIndicator.style.color = "#ffccaa";
+        }
+    }
+    
+    // THE MAIN KILL FUNCTION: WRITE NAME -> DEATH
+    function writeNameAndKill() {
+        let name = victimInput.value.trim();
+        if (name === "") {
+            addLogEntry("❌ The notebook demands a name! Write someone's full name.");
+            return;
+        }
+        // simple name validation: at least two words? we allow anything but immersive
+        if (name.length < 3) {
+            addLogEntry("❌ The ink fades... must be a real name (longer than 2 letters).");
+            return;
+        }
+        // check duplicate name (each soul unique)
+        const lowerName = name.toLowerCase();
+        if (usedNames.has(lowerName)) {
+            addLogEntry(`⚠️ The name "${name}" already died by your hand. The monster groans with annoyance.`);
+            return;
+        }
+        
+        // ---- CUTSCENE / VOICE BEFORE DEATH? yes, scary voice interrupts sometimes ----
+        // 40% chance for a random scary voice line after writing name (for immersion)
+        const randomVoiceChance = Math.random() < 0.55;
+        
+        // REGISTER DEATH
+        usedNames.add(lowerName);
+        deathToll++;
+        let hungerIncrease = 8 + Math.floor(Math.random() * 10); // 8-17% hunger
+        hunger = Math.min(100, hunger + hungerIncrease);
+        
+        // create death log entry
+        addLogEntry(`✍️ You wrote "${name}" in the notebook... Dark mist swirls. 💀 ${name} has perished.`);
+        
+        // special: if hunger reaches certain milestones -> forced cutscene voice!
+        let milestoneTrigger = false;
+        if (hunger >= 25 && hunger - hungerIncrease < 25) milestoneTrigger = "The monster's laughter echoes... 'Your soul is now stained forever!'";
+        if (hunger >= 50 && hunger - hungerIncrease < 50) milestoneTrigger = "A ghastly voice shrieks: 'FIFTY SOULS BOUND TO THE LEFT SHADOW!'";
+        if (hunger >= 80 && hunger - hungerIncrease < 80) milestoneTrigger = "The notebook pages bleed... 'You are no longer human... the monster grins with sharp teeth...'";
+        if (hunger === 100 && hunger - hungerIncrease < 100) milestoneTrigger = "ABSOLUTE CORRUPTION! The monster fuses with your left arm. CHAPTER 1 ENDS...? BUT THE NIGHTMARE CONTINUES.";
+        
+        if (milestoneTrigger) {
+            showVoiceCutscene(milestoneTrigger, () => {
+                addLogEntry(`🎭 [MILESTONE VOICE]: "${milestoneTrigger}"`, true);
+                updateUI();
+            });
+        } else if (randomVoiceChance) {
+            const randomLine = scaryVoiceLines[Math.floor(Math.random() * scaryVoiceLines.length)];
+            showVoiceCutscene(randomLine, () => {
+                addLogEntry(`${randomLine}`, true);
+                updateUI();
+            });
+        } else {
+            // small ambient voice text (no full cutscene)
+            const ambientLine = scaryVoiceLines[Math.floor(Math.random() * scaryVoiceLines.length)];
+            addLogEntry(`👻 [whisper]: "${ambientLine}"`, true);
+        }
+        
+        // special left monster comment also after kill
+        setTimeout(() => {
+            // extra spooky: If hunger > 80, extra effect
+            if (hunger >= 80) {
+                addLogEntry("👹 The creature on your left now has burning red eyes... it whispers your own name menacingly.");
+            } else if (hunger >= 40) {
+                addLogEntry("🌀 The shadow on your left grows taller, its claws scraping the floor.");
+            }
+            updateUI();
+        }, 100);
+        
+        // check game over condition: hunger 100 => special ending cutscene and disable kills? but we allow reset
+        if (hunger >= 100) {
+            hunger = 100;
+            updateUI();
+            killBtn.disabled = true;
+            killBtn.style.opacity = '0.6';
+            killBtn.style.cursor = 'not-allowed';
+            addLogEntry("⛓️ THE NOTEBOOK BECOMES A PART OF YOU. THE MONSTER TAKES YOUR LEFT EYE. GAME OVER - RESET TO EXORCISE.");
+            showVoiceCutscene("YOU HAVE BECOME THE KEEPER OF DEATH. THE NOTEBOOK CONSUMES YOU. RESET TO START CHAPTER 1 AGAIN.", () => {});
+        } else {
+            if (killBtn.disabled) killBtn.disabled = false;
+            killBtn.style.opacity = '1';
+        }
+        
+        victimInput.value = "";
+        victimInput.focus();
+        updateUI();
+    }
+    
+    // RESET function (bury the notebook)
+    function resetGame() {
+        deathToll = 0;
+        hunger = 0;
+        usedNames.clear();
+        if (killBtn.disabled) killBtn.disabled = false;
+        killBtn.style.opacity = '1';
+        // clear logs except first few narrative lines
+        logArea.innerHTML = '';
+        addLogEntry("✨ You bury the notebook under an old tree... but the monster whispers: 'I'll return...' ✨");
+        addLogEntry("📖 The notebook reappears in your pocket. It begins anew. The left side shadow reforms.");
+        addLogEntry("👤 [SCARY VOICE]: 'Chapter 1 restarts... Write again... if you dare.'", true);
+        updateUI();
+        
+        // reset monster default dialogue
+        monsterDialogueSpan.innerText = "Write... a name... and they die...";
+        victimInput.value = "";
+        victimInput.focus();
+        
+        // optional small cutscene to mark reset
+        showVoiceCutscene("The cycle resets. The notebook is hungry again. Beware the left shadow.", () => {});
+    }
+    
+    // initial scripted cutscene when page loads: introduction (voice + monster appear)
+    function startIntroCutscene() {
+        // disable interaction during intro?
+        killBtn.disabled = true;
+        resetBtn.disabled = true;
+        victimInput.disabled = true;
+        
+        const introSequence = [
+            "You find a strange, leather-bound notebook on the cold pavement...",
+            "As you open the first page, a dark fog rises on your LEFT side...",
+            "A monstrous silhouette grins at you with hollow eyes...",
+            "[SCARY VOICE]: 'Write a name in this book, and that person will die... No one can escape.'",
+            "The monster whispers: 'Test it... choose a name... Chapter 1 has begun...'"
+        ];
+        
+        let step = 0;
+        function showNextIntro() {
+            if (step < introSequence.length) {
+                const msg = introSequence[step];
+                if (msg.includes("[SCARY VOICE]")) {
+                    const clean = msg.replace("[SCARY VOICE]: ", "");
+                    showVoiceCutscene(clean, () => {
+                        addLogEntry(msg, true);
+                        step++;
+                        showNextIntro();
+                    });
+                } else {
+                    addLogEntry(msg);
+                    step++;
+                    setTimeout(showNextIntro, 1000);
+                }
+            } else {
+                // final unlock game
+                killBtn.disabled = false;
+                resetBtn.disabled = false;
+                victimInput.disabled = false;
+                addLogEntry("⚰️ The notebook is ready. The monster waits on your left. Write a name...");
+                updateUI();
+                // Set initial monster comment
+                monsterDialogueSpan.innerText = "Try me... write a name... anyone...";
+            }
+        }
+        showNextIntro();
+    }
+    
+    // add event listeners
+    killBtn.addEventListener('click', () => {
+        if (!killBtn.disabled) writeNameAndKill();
+        else addLogEntry("The notebook is dormant... reset the curse.");
+    });
+    
+    victimInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !killBtn.disabled) {
+            e.preventDefault();
+            writeNameAndKill();
+        } else if (e.key === 'Enter' && killBtn.disabled) {
+            addLogEntry("The power is sealed. Press 'Bury the notebook' to start again.");
+        }
+    });
+    
+    resetBtn.addEventListener('click', () => {
+        resetGame();
+        // ensure if hunger was 100 and disabled, we re-enable properly
+        if (hunger >= 100) {
+            killBtn.disabled = false;
+            victimInput.disabled = false;
+        }
+        killBtn.disabled = false;
+        victimInput.disabled = false;
+        resetBtn.disabled = false;
+    });
+    
+    // disable initially
+    killBtn.disabled = true;
+    resetBtn.disabled = true;
+    victimInput.disabled = true;
+    
+    // start epic story intro cutscene & monster left side reveal
+    startIntroCutscene();
+    
+    // additional left side subtle effect: CSS left border pulsing
+    setInterval(() => {
+        const monsterPanel = document.querySelector('.monster-panel');
+        if (monsterPanel && hunger > 20) {
+            const intensity = Math.min(0.8, hunger / 100);
+            monsterPanel.style.borderLeftColor = `rgba(255, 80, 40, ${0.5+intensity*0.5})`;
+        } else if (monsterPanel) {
+            monsterPanel.style.borderLeftColor = '#c04522';
+        }
+    }, 800);
+</script>
+</body>
+</html>
